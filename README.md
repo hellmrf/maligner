@@ -14,10 +14,10 @@ Currently, the plan for the UX of the software is the following.
 - Can see a grid with all molecules and the filename
 - Can mark one molecule as anchor
 - Can go to structure selector.
-- Options tab
+- Options menu
 - "Preview Alignment" and "Save Alignment" buttons.
 
-**Options tab**
+**Options menu**
 - Save action:
   - Overwrite original files
   - Suffix aligned files (option to write the suffix)
