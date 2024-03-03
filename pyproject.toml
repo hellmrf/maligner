@@ -7,7 +7,7 @@ name = "malign"
 dynamic = ["version"]
 description = "An Open-Source Molecular Alignment Tool"
 readme = "README.md"
-license = "LICENSE"
+license = "GPL-3.0-only"
 authors = [
     { name = "Heliton Martins Reis Filho", email = "helitonmrf@gmail.com" },
 ]
@@ -16,6 +16,9 @@ dependencies = [
     "PySide6",
     "rdkit",
 ]
+
+[project.gui-scripts]
+malign = "malign:main"
 
 [project.urls]
 Homepage = "https://github.com/hellmrf/malign"
@@ -28,3 +31,5 @@ include = [
     "/malign",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["/malign"]
