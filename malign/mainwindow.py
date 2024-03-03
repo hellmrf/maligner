@@ -209,12 +209,8 @@ class MainWindow(QtWidgets.QMainWindow):
         event.ignore()
 
     def exitFile(self):
-        response = self.msgApp("Confirmation","This will quit the application. Do you want to Continue?")
-        if response == "Y":
-            self.ptable.close()
-            exit(0) #TODO, how to exit qapplication from within class instance?
-        else:
-            self.editor.logger.debug("Abort closing")
+        self.ptable.close()
+        exit(0) #TODO, how to exit qapplication from within class instance?
 
 
     # Function to show Diaglog box with provided Title and Message
