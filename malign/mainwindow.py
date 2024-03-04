@@ -184,7 +184,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def aboutHelp(self):
         QMessageBox.about(
             self, "About malign",
-            """malign is an Open-Source Molecular Alignment Tool.\nBased on RDKit! http://www.rdkit.org/ \nSome icons from http://icons8.com\n\nSource code: https://github.com/hellmrf/malign"""
+            """malign is an Open-Source Molecular Alignment Tool.\n\n\nBased on RDKit: http://www.rdkit.org/\nBased on rdeditor: https://github.com/EBjerrum/rdeditor\nSome icons from: http://icons8.com\nSource code: https://github.com/hellmrf/malign\n\nReleased under GPL-v3.0."""
         )
 
     def setAction(self):
