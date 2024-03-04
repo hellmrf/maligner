@@ -19,30 +19,30 @@ from rdkit import Chem
 # The main window class
 class MainWindow(QtWidgets.QMainWindow):
     # Constructor function
-    def __init__(self, fileName=None, loglevel="WARNING"):
+    def __init__(self, filename=None, loglevel="WARNING"):
         super(MainWindow,self).__init__()
         self.pixmappath = os.path.abspath(os.path.dirname(__file__)) + '/pixmaps/'
         self.loglevels = ["Critical","Error","Warning","Info","Debug","Notset"]
         self.editor = MolEditWidget()
         self.ptable = PTable()
-        self._fileName = None
-        self.initGUI(fileName = fileName)
+        self._filename = None
+        self.initGUI(filename = filename)
         self.ptable.atomtypeChanged.connect(self.setAtomTypeName)
         self.editor.logger.setLevel(loglevel)
 
     #Properties
     @property
     def fileName(self):
-        return self._fileName
+        return self._filename
 
     @fileName.setter
     def fileName(self, filename):
-        if filename != self._fileName:
-            self._fileName = filename
+        if filename != self._filename:
+            self._filename = filename
             self.setWindowTitle(str(filename))
 
 
-    def initGUI(self, fileName=None):
+    def initGUI(self, filename=None):
         self.setWindowTitle("A simple mol editor")
         self.setWindowIcon(QIcon(self.pixmappath + 'appicon.svg.png'))
         self.setGeometry(100, 100, 200, 150)
@@ -50,7 +50,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.center = self.editor
         self.center.setFixedSize(600,600)
         self.setCentralWidget(self.center)
-        self.fileName = fileName
+        self.fileName = filename
 
         self.filters = "MOL Files (*.mol *.mol);;Any File (*)"
         self.SetupComponents()
@@ -60,7 +60,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if self.fileName is not None:
             self.editor.logger.info("Loading model from %s"%self.fileName)
-            self.loadMolFile(fileName)
+            self.loadMolFile(filename)
 
         self.editor.sanitizeSignal.connect(self.infobar.setText)
         self.show()
@@ -260,7 +260,7 @@ def launch(loglevel="WARNING"):
     try:
         myApp = QApplication(sys.argv)
         try:
-            mainWindow = MainWindow(fileName = sys.argv[1], loglevel=loglevel)
+            mainWindow = MainWindow(filename = sys.argv[1], loglevel=loglevel)
         except:
             mainWindow = MainWindow(loglevel=loglevel)
         myApp.exec()
