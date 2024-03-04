@@ -88,8 +88,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def CreateMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")
         self.toolMenu = self.menuBar().addMenu("&Tools")
-        self.atomtypeMenu = self.menuBar().addMenu("&AtomTypes")
-        self.bondtypeMenu = self.menuBar().addMenu("&BondTypes")
         self.helpMenu = self.menuBar().addMenu("&Help")
 
         # File
