@@ -32,7 +32,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.substructure_selector = SubstructureSelectorDialog(
             filename=filename)
         self._filename = filename
-        self.initGUI(fileName=filename)
+        self.initGUI()
         # TODO: selectionChanges ainda não existe
         # self.substructure_selector.selectionChanged.connect(self.setAtomTypeName)
         self.editor.logger.setLevel(loglevel)
@@ -48,15 +48,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self._filename = filename
             self.setWindowTitle(str(filename))
 
-    def initGUI(self, fileName=None):
+    def initGUI(self):
         self.setWindowTitle("malign - An Open-Source Molecular Alignment Tool")
         self.setWindowIcon(QIcon(self.pixmappath + 'appicon.svg.png'))
         self.setGeometry(100, 100, 200, 150)
 
-        self.center = self.editor
-        self.center.setFixedSize(600, 600)
-        self.setCentralWidget(self.center)
-        self.filename = fileName
+        # self.center = self.editor
+        # self.center.setFixedSize(600, 600)
+        # self.setCentralWidget(self.center)
 
         self.filters = "MOL Files (*.mol *.mol);;Any File (*)"
         self.SetupComponents()
@@ -66,7 +65,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if self.filename is not None:
             self.editor.logger.info("Loading model from %s" % self.filename)
-            self.loadMolFile(fileName)
+            self.loadMolFile(self.filename)
 
         self.editor.sanitizeSignal.connect(self.infobar.setText)
         self.show()
@@ -198,7 +197,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def set_anchor(self):
         raise NotImplementedError("")
 
-    def openPtable(self):
+    def openSubsSelector(self):
         self.substructure_selector.show()
 
     def setLogLevel(self):
