@@ -255,22 +255,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.loglevelactions["Debug"].setChecked(True)
 
 def launch(loglevel="WARNING"):
+
     "Function that launches the mainWindow Application"
-    # Exception Handling
-    try:
-        myApp = QApplication(sys.argv)
-        try:
-            mainWindow = MainWindow(fileName = sys.argv[1], loglevel=loglevel)
-        except:
-            mainWindow = MainWindow(loglevel=loglevel)
-        myApp.exec()
-        sys.exit(0)
-    except NameError:
-        print("Name Error:", sys.exc_info()[1])
-    except SystemExit:
-        print("Closing Window...")
-    except Exception:
-        print(sys.exc_info()[1])
+    myApp = QApplication(sys.argv)
+    argv1 = Path(sys.argv[1]) if len(sys.argv) > 1 else None
+    if argv1 and argv1.is_file():
+        mainWindow = MainWindow(filename = argv1, loglevel=loglevel)
+    else:
+        mainWindow = MainWindow(filename = None, loglevel=loglevel)
+    sys.exit(myApp.exec())
+    
 
 
 if __name__ == '__main__':
