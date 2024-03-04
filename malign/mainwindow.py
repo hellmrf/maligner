@@ -29,7 +29,8 @@ class MainWindow(QtWidgets.QMainWindow):
             "Critical", "Error", "Warning", "Info", "Debug", "Notset"
         ]
         self.editor = MolEditWidget()
-        self.substructure_selector = SubstructureSelectorDialog(filename=filename)
+        self.substructure_selector = SubstructureSelectorDialog(
+            filename=filename)
         self._filename = filename
         self.initGUI(fileName=filename)
         # TODO: selectionChanges ainda não existe
@@ -170,16 +171,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def exitFile(self):
         self.substructure_selector.close()
         exit(0)  #TODO, how to exit qapplication from within class instance?
-
-    # Function to show Diaglog box with provided Title and Message
-    def msgApp(self, title, msg):
-        userInfo = QMessageBox.question(self, title, msg,
-                                        QMessageBox.Yes | QMessageBox.No)
-        if userInfo == QMessageBox.Yes:
-            return "Y"
-        if userInfo == QMessageBox.No:
-            return "N"
-        self.close()
 
     def aboutHelp(self):
         QMessageBox.about(
