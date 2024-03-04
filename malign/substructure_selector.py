@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 from __future__ import print_function
+from pathlib import Path
 
 
 # Import required modules
 import sys, time, os
+from typing import Optional
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from PySide6.QtCore import QByteArray
@@ -19,13 +21,13 @@ from rdkit import Chem
 # The main window class
 class MainWindow(QtWidgets.QMainWindow):
     # Constructor function
-    def __init__(self, filename=None, loglevel="WARNING"):
+    def __init__(self, filename: Optional[Path | str], loglevel="WARNING"):
         super(MainWindow,self).__init__()
         self.pixmappath = os.path.abspath(os.path.dirname(__file__)) + '/pixmaps/'
         self.loglevels = ["Critical","Error","Warning","Info","Debug","Notset"]
         self.editor = MolEditWidget()
         self.ptable = PTable()
-        self._filename = None
+        self._filename = filename
         self.initGUI(filename = filename)
         self.ptable.atomtypeChanged.connect(self.setAtomTypeName)
         self.editor.logger.setLevel(loglevel)
@@ -256,21 +258,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
 def launch(loglevel="WARNING"):
     "Function that launches the mainWindow Application"
-    # Exception Handling
-    try:
-        myApp = QApplication(sys.argv)
-        try:
-            mainWindow = MainWindow(filename = sys.argv[1], loglevel=loglevel)
-        except:
-            mainWindow = MainWindow(loglevel=loglevel)
-        myApp.exec()
-        sys.exit(0)
-    except NameError:
-        print("Name Error:", sys.exc_info()[1])
-    except SystemExit:
-        print("Closing Window...")
-    except Exception:
-        print(sys.exc_info()[1])
+    myApp = QApplication(sys.argv)
+    argv1 = Path(sys.argv[1]) if len(sys.argv) > 1 else None
+    if argv1 and argv1.is_file():
+        mainWindow = MainWindow(filename = argv1, loglevel=loglevel)
+    else:
+        mainWindow = MainWindow(filename = None, loglevel=loglevel)
+    sys.exit(myApp.exec())
+    
 
 
 if __name__ == '__main__':
