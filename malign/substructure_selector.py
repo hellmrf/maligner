@@ -81,13 +81,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def CreateToolBars(self):
         self.mainToolBar = self.addToolBar('Main')
         #Main action bar
-        self.mainToolBar.addAction(self.openAction)
-        self.mainToolBar.addSeparator()
         self.mainToolBar.addAction(self.cleanCoordinatesAction)
-        self.mainToolBar.addSeparator()
-        self.mainToolBar.addAction(self.deleteMoleculeAction)
-        self.mainToolBar.addSeparator()
         self.mainToolBar.addAction(self.undoAction)
+        self.mainToolBar.addAction(self.deleteMoleculeAction)
 
     def loadMolFile(self, filename):
         self.fileName = filename
@@ -174,13 +170,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to create actions for menus and toolbars
     def CreateActions(self):
-        self.openAction = QAction( QIcon(self.pixmappath + 'open.png'), 'O&pen',
-                                  self, shortcut=QKeySequence.Open,
-                                  statusTip="Open an existing file",
-                                  triggered=self.openFile)
-
-       
-
         self.exitAction = QAction( QIcon(self.pixmappath + 'icons8-Shutdown.png'), 'E&xit',
                                    self, shortcut="Ctrl+Q",
                                    statusTip="Exit the Application",
