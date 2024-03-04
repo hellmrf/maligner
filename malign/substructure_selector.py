@@ -74,8 +74,6 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
     # Function to setup status bar, central widget, menu bar, tool bar
     def SetupComponents(self):
         self.myStatusBar = QStatusBar()
-        #        self.molcounter = QLabel("-/-")
-        #        self.myStatusBar.addPermanentWidget(self.molcounter, 0)
         self.setStatusBar(self.myStatusBar)
         self.myStatusBar.showMessage('Ready', 10000)
 
@@ -221,11 +219,13 @@ class SubstructureSelectorDialog(QDialog):
 
     def __init__(self, filename: Optional[Path | str], loglevel="WARNING"):
         super().__init__()
-        self.substructureSelectorDialog = SubstructureSelectorWindow(
+        self.ss_window = SubstructureSelectorWindow(
             filename, loglevel)
         layout = QVBoxLayout()
-        layout.addWidget(self.substructureSelectorDialog)
+        layout.addWidget(self.ss_window)
         self.setLayout(layout)
+        self.setWindowTitle("Substructure Selector")
+        self.setWindowIcon(QIcon(self.ss_window.pixmappath + 'icons8-Cursor.png'))
 
 
 def launch(loglevel="WARNING"):
