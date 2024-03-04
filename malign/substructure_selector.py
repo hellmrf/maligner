@@ -12,6 +12,8 @@ from PySide6.QtCore import QByteArray
 from PySide6 import QtCore, QtGui, QtWidgets
 from PySide6 import QtSvg
 
+from PySide6.QtWidgets import QDialog, QVBoxLayout
+
 #Import model
 from malign.molEditWidget import MolEditWidget
 from malign.ptable_widget import PTable
@@ -19,10 +21,10 @@ from malign.ptable_widget import PTable
 from rdkit import Chem
 
 # The main window class
-class MainWindow(QtWidgets.QMainWindow):
+class SubstructureSelectorWindow(QtWidgets.QMainWindow):
     # Constructor function
     def __init__(self, filename: Optional[Path | str], loglevel="WARNING"):
-        super(MainWindow,self).__init__()
+        super(SubstructureSelectorWindow,self).__init__()
         self.pixmappath = os.path.abspath(os.path.dirname(__file__)) + '/pixmaps/'
         self.loglevels = ["Critical","Error","Warning","Info","Debug","Notset"]
         self.editor = MolEditWidget()
@@ -192,14 +194,24 @@ class MainWindow(QtWidgets.QMainWindow):
                                    triggered=self.editor.canon_coords_and_draw, objectName="Recalculate Coordinates")
 
 
+
+class SubstructureSelectorDialog(QDialog):
+    def __init__(self, filename: Optional[Path | str], loglevel="WARNING"):
+        super().__init__()
+        self.substructureSelectorDialog = SubstructureSelectorWindow(filename, loglevel)
+        layout = QVBoxLayout()
+        layout.addWidget(self.substructureSelectorDialog)
+        self.setLayout(layout)
+
 def launch(loglevel="WARNING"):
+
     "Function that launches the mainWindow Application"
     myApp = QApplication(sys.argv)
     argv1 = Path(sys.argv[1]) if len(sys.argv) > 1 else None
     if argv1 and argv1.is_file():
-        mainWindow = MainWindow(filename = argv1, loglevel=loglevel)
+        mainWindow = SubstructureSelectorWindow(filename = argv1, loglevel=loglevel)
     else:
-        mainWindow = MainWindow(filename = None, loglevel=loglevel)
+        mainWindow = SubstructureSelectorWindow(filename = None, loglevel=loglevel)
     sys.exit(myApp.exec())
     
 
