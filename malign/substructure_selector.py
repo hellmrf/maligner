@@ -45,8 +45,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def initGUI(self, filename=None):
-        self.setWindowTitle("A simple mol editor")
-        self.setWindowIcon(QIcon(self.pixmappath + 'appicon.svg.png'))
+        self.setWindowTitle("Substructure selector")
+        self.setWindowIcon(QIcon(self.pixmappath + 'icons8-Cursor.png'))
         self.setGeometry(100, 100, 200, 150)
 
         self.center = self.editor
