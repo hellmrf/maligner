@@ -76,39 +76,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.myStatusBar.showMessage('Ready', 10000)
 
         self.CreateActions()
-        self.CreateMenus()
         self.CreateToolBars()
-
-    # Actual menu bar item creation
-    def CreateMenus(self):
-        self.fileMenu = self.menuBar().addMenu("&File")
-        self.toolMenu = self.menuBar().addMenu("&Tools")
-        self.atomtypeMenu = self.menuBar().addMenu("&AtomTypes")
-        self.bondtypeMenu = self.menuBar().addMenu("&BondTypes")
-        self.helpMenu = self.menuBar().addMenu("&Help")
-
-        # File
-        self.fileMenu.addAction(self.openAction)
-        self.fileMenu.addAction(self.saveAction)
-        self.fileMenu.addSeparator()
-        self.fileMenu.addAction(self.exitAction)
-
-        # Tools
-        self.toolMenu.addSeparator()
-        self.toolMenu.addAction(self.cleanCoordinatesAction)
-        self.toolMenu.addSeparator()
-        self.toolMenu.addAction(self.undoAction)
-        self.toolMenu.addSeparator()
-        # self.toolMenu.addAction(self.removeAction)
-
-        #Help menu
-        self.helpMenu.addAction(self.aboutAction)
-        self.helpMenu.addSeparator()
-        self.helpMenu.addAction(self.aboutQtAction)
-        #Debug level sub menu
-        self.loglevelMenu = self.helpMenu.addMenu("Logging Level")
-        for loglevel in self.loglevels:
-            self.loglevelMenu.addAction(self.loglevelactions[loglevel])
 
     def CreateToolBars(self):
         self.mainToolBar = self.addToolBar('Main')
@@ -223,15 +191,6 @@ class MainWindow(QtWidgets.QMainWindow):
                                    statusTip="Exit the Application",
                                    triggered=self.exitFile)
 
-        self.aboutAction = QAction( QIcon(self.pixmappath + 'about.png'), 'A&bout',
-                                    self, statusTip="Displays info about text editor",
-                                   triggered=self.aboutHelp)
-
-        self.aboutQtAction = QAction("About &Qt", self,
-                                statusTip="Show the Qt library's About box",
-                                triggered=QApplication.aboutQt)
-
-
         #Misc Actions
         self.undoAction = QAction( QIcon(self.pixmappath + 'prev.png'), 'U&ndo',
                            self, shortcut="Ctrl+Z",
@@ -248,13 +207,6 @@ class MainWindow(QtWidgets.QMainWindow):
                                    statusTip="Re-calculates coordinates and redraw",
                                    triggered=self.editor.canon_coords_and_draw, objectName="Recalculate Coordinates")
 
-        self.loglevelactions = {}
-        for key in self.loglevels:
-            self.loglevelactions[key] = QAction(key,
-                                   self,
-                                   statusTip="Set logging level to %s"%key,
-                                   triggered=self.setLogLevel, objectName="loglevel:%s"%key)
-        self.loglevelactions["Debug"].setChecked(True)
 
 def launch(loglevel="WARNING"):
     "Function that launches the mainWindow Application"
