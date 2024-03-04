@@ -3,13 +3,11 @@ from __future__ import print_function
 from pathlib import Path
 
 # Import required modules
-import sys, time, os
+import sys, os
 from typing import Optional
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
-from PySide6.QtCore import QByteArray
-from PySide6 import QtCore, QtGui, QtWidgets
-from PySide6 import QtSvg
+from PySide6 import QtWidgets
 
 from PySide6.QtWidgets import QDialog, QVBoxLayout
 

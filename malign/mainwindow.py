@@ -3,13 +3,11 @@ from __future__ import print_function
 from pathlib import Path
 
 # Import required modules
-import sys, time, os
+import sys, os
 from typing import Optional
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
-from PySide6.QtCore import QByteArray
-from PySide6 import QtCore, QtGui, QtWidgets
-from PySide6 import QtSvg
+from PySide6 import QtWidgets
 
 #Import model
 from malign.molEditWidget import MolEditWidget
@@ -50,7 +48,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setWindowTitle(str(filename))
 
     def initGUI(self, fileName=None):
-        self.setWindowTitle("A simple mol editor")
+        self.setWindowTitle("malign - An Open-Source Molecular Alignment Tool")
         self.setWindowIcon(QIcon(self.pixmappath + 'appicon.svg.png'))
         self.setGeometry(100, 100, 200, 150)
 
@@ -185,8 +183,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def aboutHelp(self):
         QMessageBox.about(
-            self, "About Simple Molecule Editor",
-            """A Simple Molecule Editor where you can edit molecules\nBased on RDKit! http://www.rdkit.org/ \nSome icons from http://icons8.com\n\nSource code: https://github.com/EBjerrum/rdeditor"""
+            self, "About malign",
+            """malign is an Open-Source Molecular Alignment Tool.\nBased on RDKit! http://www.rdkit.org/ \nSome icons from http://icons8.com\n\nSource code: https://github.com/hellmrf/malign"""
         )
 
     def setAction(self):

@@ -1,17 +1,13 @@
 #!/usr/bin/python
 #Import required modules
 from __future__ import print_function
-from PySide6 import QtCore, QtGui, QtSvg, QtWidgets
+from PySide6 import QtCore, QtWidgets
 from PySide6 import QtSvgWidgets
 import sys
 from types import *
 import logging
 
-import numpy as np
 from rdkit import Chem
-from rdkit.Chem.rdchem import Mol
-from rdkit.Chem import AllChem
-from rdkit.Chem import Draw
 from rdkit.Chem import rdDepictor
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Geometry.rdGeometry import Point2D
