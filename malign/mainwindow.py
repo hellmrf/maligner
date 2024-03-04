@@ -96,16 +96,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.fileMenu.addAction(self.exitAction)
 
         # Tools
-        self.toolMenu.addSeparator()
-        self.toolMenu.addAction(self.cleanCoordinatesAction)
-        self.toolMenu.addSeparator()
-        self.toolMenu.addAction(self.undoAction)
-        self.toolMenu.addSeparator()
-        # self.toolMenu.addAction(self.removeAction)
+        self.toolMenu.addAction(self.anchorAction)
+        self.toolMenu.addAction(self.deleteMoleculeAction)
+        self.toolMenu.addAction(self.openSelectorAction)
 
         #Help menu
         self.helpMenu.addAction(self.aboutAction)
-        self.helpMenu.addSeparator()
         self.helpMenu.addAction(self.aboutQtAction)
         #Debug level sub menu
         self.loglevelMenu = self.helpMenu.addMenu("Logging Level")
@@ -118,11 +114,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mainToolBar.addAction(self.openAction)
         self.mainToolBar.addAction(self.saveAction)
         self.mainToolBar.addSeparator()
-        self.mainToolBar.addAction(self.cleanCoordinatesAction)
+        self.mainToolBar.addAction(self.anchorAction)
         self.mainToolBar.addSeparator()
         self.mainToolBar.addAction(self.deleteMoleculeAction)
         self.mainToolBar.addSeparator()
-        self.mainToolBar.addAction(self.undoAction)
         self.mainToolBar.addAction(self.openSelectorAction)
 
     def loadMolFile(self, filename):
@@ -200,6 +195,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.editor.setAtomType(str(atomname))
         self.myStatusBar.showMessage("Atomtype %s selected" % atomname)
 
+    def set_anchor(self):
+        raise NotImplementedError("")
+
     def openPtable(self):
         self.substructure_selector.show()
 
@@ -244,15 +242,6 @@ class MainWindow(QtWidgets.QMainWindow):
             triggered=QApplication.aboutQt)
 
         #Misc Actions
-        self.undoAction = QAction(
-            QIcon(self.pixmappath + 'prev.png'),
-            'U&ndo',
-            self,
-            shortcut="Ctrl+Z",
-            statusTip="Undo/Redo changes to molecule Ctrl+Z",
-            triggered=self.editor.undo,
-            objectName="undo")
-
         self.deleteMoleculeAction = QAction(
             QIcon(self.pixmappath + 'icons8-Trash.png'),
             'Delete &X',
@@ -262,14 +251,14 @@ class MainWindow(QtWidgets.QMainWindow):
             triggered=self.clearCanvas,
             objectName="Clear Canvas")
 
-        self.cleanCoordinatesAction = QAction(
-            QIcon(self.pixmappath + 'icons8-Broom.png'),
-            'Recalculate coordinates &F',
+        self.anchorAction = QAction(
+            QIcon(self.pixmappath + 'icons8-Anchor.png'),
+            'Anchor current molecule &A',
             self,
-            shortcut="Ctrl+F",
-            statusTip="Re-calculates coordinates and redraw",
-            triggered=self.editor.canon_coords_and_draw,
-            objectName="Recalculate Coordinates")
+            shortcut="A",
+            statusTip="Set the selected molecule as the anchor for the alignment. (A)",
+            triggered=self.set_anchor,
+            objectName="Set Anchor")
 
         self.openSelectorAction = QAction(
             QIcon(self.pixmappath + 'icons8-Molecule.png'),
