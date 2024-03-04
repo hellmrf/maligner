@@ -15,9 +15,11 @@ from rdkit.Chem import rdDepictor
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Geometry.rdGeometry import Point2D
 
+
 #The Viewer Class
 class MolWidget(QtSvgWidgets.QSvgWidget):
-    def __init__(self, mol = None, parent=None):
+
+    def __init__(self, mol=None, parent=None):
         #Also init the super class
         super(MolWidget, self).__init__(parent)
 
@@ -29,10 +31,10 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
         #This sets the window to delete itself when its closed, so it doesn't keep lingering in the background
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         #Private Properties
-        self._mol = None #The molecule
-        self._drawmol = None #Molecule for drawing
-        self.drawer = None #drawing object for producing SVG
-        self._selectedAtoms = [] #List of selected atoms
+        self._mol = None  #The molecule
+        self._drawmol = None  #Molecule for drawing
+        self.drawer = None  #drawing object for producing SVG
+        self._selectedAtoms = []  #List of selected atoms
 
         #Bind signales to slots for automatic actions
         self.molChanged.connect(self.sanitize_draw)
@@ -40,7 +42,6 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
 
         #Initialize class with the mol passed
         self.mol = mol
-
 
     ##Properties and their wrappers
     @property
@@ -51,11 +52,9 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
     def loglevel(self, loglvl):
         self.logger.setLevel(loglvl)
 
-
-
-
     #Getter and setter for mol
     molChanged = QtCore.Signal(name="molChanged")
+
     @property
     def mol(self):
         return self._mol
@@ -63,11 +62,11 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
     @mol.setter
     def mol(self, mol):
         if mol == None:
-            mol=Chem.MolFromSmiles('')
+            mol = Chem.MolFromSmiles('')
         if mol != self._mol:
             #TODO assert that this is a RDKit mol
             if self._mol != None:
-                self._prevmol = Chem.Mol(self._mol.ToBinary()) #Copy
+                self._prevmol = Chem.Mol(self._mol.ToBinary())  #Copy
             self._mol = mol
             self.molChanged.emit()
 
@@ -76,6 +75,7 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
 
     #Handling of selections
     selectionChanged = QtCore.Signal(name="selectionChanged")
+
     def selectAtomAdd(self, atomidx):
         if not atomidx in self._selectedAtoms:
             self._selectedAtoms.append(atomidx)
@@ -101,8 +101,10 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
     @selectedAtoms.setter
     def selectedAtoms(self, atomlist):
         if atomlist != self._selectedAtoms:
-            assert type(atomlist) == list, "selectedAtoms should be a list of integers"
-            assert all(isinstance(item, int) for item in atomlist), "selectedAtoms should be a list of integers"
+            assert type(
+                atomlist) == list, "selectedAtoms should be a list of integers"
+            assert all(isinstance(item, int) for item in
+                       atomlist), "selectedAtoms should be a list of integers"
             self._selectedAtoms = atomlist
             self.selectionChanged.emit()
 
@@ -145,9 +147,11 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
                 if (pos3d.x, pos3d.y) == (0, 0):
                     continue
                 prev_coords[a.GetIdx()] = Point2D(pos3d.x, pos3d.y)
-        self.logger.debug("Coordmap %s"%prev_coords)
-        self.logger.debug("canonOrient %s"%canonOrient)
-        rdDepictor.Compute2DCoords(self._mol, coordMap=prev_coords, canonOrient=canonOrient)
+        self.logger.debug("Coordmap %s" % prev_coords)
+        self.logger.debug("canonOrient %s" % canonOrient)
+        rdDepictor.Compute2DCoords(self._mol,
+                                   coordMap=prev_coords,
+                                   canonOrient=canonOrient)
 
     def canon_coords_and_draw(self):
         self.logger.debug("Recalculating coordinates")
@@ -156,10 +160,11 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
         self.draw()
 
     sanitizeSignal = QtCore.Signal(str, name="sanitizeSignal")
+
     @QtCore.Slot()
     def sanitizeMol(self, kekulize=False, drawkekulize=False):
         self.computeNewCoords()
-        self._drawmol = Chem.Mol(self._mol.ToBinary()) #Is this necessary?
+        self._drawmol = Chem.Mol(self._mol.ToBinary())  #Is this necessary?
         try:
             Chem.SanitizeMol(self._drawmol)
             self.sanitizeSignal.emit("Sanitizable")
@@ -178,14 +183,16 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
             except:
                 self.logger.warning("Unkekulizable")
         try:
-            self._drawmol = rdMolDraw2D.PrepareMolForDrawing(self._drawmol, kekulize=drawkekulize)
+            self._drawmol = rdMolDraw2D.PrepareMolForDrawing(
+                self._drawmol, kekulize=drawkekulize)
         except ValueError:  # <- can happen on a kekulization failure
-            self._drawmol = rdMolDraw2D.PrepareMolForDrawing(self._drawmol, kekulize=False)
-
+            self._drawmol = rdMolDraw2D.PrepareMolForDrawing(self._drawmol,
+                                                             kekulize=False)
 
     finishedDrawing = QtCore.Signal(name="finishedDrawing")
+
     def getMolSvg(self):
-        self.drawer = rdMolDraw2D.MolDraw2DSVG(300,300)
+        self.drawer = rdMolDraw2D.MolDraw2DSVG(300, 300)
         #TODO, what if self._drawmol doesn't exist?
         if self._drawmol != None:
             #Chiral tags on R/S
@@ -193,29 +200,33 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
             opts = self.drawer.drawOptions()
             for tag in chiraltags:
                 idx = tag[0]
-                opts.atomLabels[idx]= self._drawmol.GetAtomWithIdx(idx).GetSymbol() + ':' + tag[1]
+                opts.atomLabels[idx] = self._drawmol.GetAtomWithIdx(
+                    idx).GetSymbol() + ':' + tag[1]
             if len(self._selectedAtoms) > 0:
-                colors={self._selectedAtoms[-1]:(1,0.2,0.2)} #Color lastly selected a different color
-                self.drawer.DrawMolecule(self._drawmol, highlightAtoms=self._selectedAtoms, highlightAtomColors=colors, )
+                colors = {
+                    self._selectedAtoms[-1]: (1, 0.2, 0.2)
+                }  #Color lastly selected a different color
+                self.drawer.DrawMolecule(
+                    self._drawmol,
+                    highlightAtoms=self._selectedAtoms,
+                    highlightAtomColors=colors,
+                )
             else:
                 self.drawer.DrawMolecule(self._drawmol)
         self.drawer.FinishDrawing()
-        self.finishedDrawing.emit()#Signal that drawer has finished
-        svg = self.drawer.GetDrawingText().replace('svg:','')
+        self.finishedDrawing.emit()  #Signal that drawer has finished
+        svg = self.drawer.GetDrawingText().replace('svg:', '')
         return svg
 
 
 if __name__ == "__main__":
-#    model = SDmodel()
-#    model.loadSDfile('dhfr_3d.sd')
+    #    model = SDmodel()
+    #    model.loadSDfile('dhfr_3d.sd')
     mol = Chem.MolFromSmiles('CCN(C)c1ccccc1S')
     #rdDepictor.Compute2DCoords(mol)
     myApp = QtWidgets.QApplication(sys.argv)
     molview = MolWidget(mol)
     molview.selectAtom(1)
-    molview.selectedAtoms = [1,2,3]
+    molview.selectedAtoms = [1, 2, 3]
     molview.show()
     myApp.exec_()
-
-
-

@@ -1,7 +1,7 @@
-
 from malign.mainwindow import MainWindow
 import sys, os
 from PySide6.QtWidgets import QApplication
+
 
 def main(loglevel="WARNING"):
     """Function that launches the mainWindow Application"""
@@ -13,6 +13,7 @@ def main(loglevel="WARNING"):
     except Exception as e:
         print(sys.exc_info()[1])
         raise e
+
 
 if __name__ == '__main__':
     main(loglevel="DEBUG")
