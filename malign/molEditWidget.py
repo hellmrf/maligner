@@ -14,11 +14,11 @@ from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Geometry.rdGeometry import Point2D, Point3D
 #from rdkit.Chem.AllChem import GenerateDepictionMatching3DStructure
 
-from .molViewWidget import MolWidget
+from malign.molViewWidget import MolWidget
 
 from types import *
 
-from .ptable import symboltoint
+from malign.ptable import symboltoint
 
 debug = True
 
@@ -31,8 +31,8 @@ class MolEditWidget(MolWidget):
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
         #Properties
-        self._prevmol = mol # For undo
-        self.coordlist = None # SVG coords of the current mols atoms
+        self._prevmol = None #For undo
+        self.coordlist = None #SVG coords of the current mols atoms
 
         #Standard atom types
         self.symboltoint = symboltoint
@@ -48,7 +48,7 @@ class MolEditWidget(MolWidget):
         self.points = [Point2D(0,0),Point2D(1,1)]
 
         #Bind signals to slots
-        # self.finishedDrawing.connect(self.update_coordlist) #When drawing finished, update coordlist of SVG atoms.
+        self.finishedDrawing.connect(self.update_coordlist) #When drawing finished, update coordlist of SVG atoms.
 
         #Init with a mol if passed at construction
         #if mol != None:
@@ -58,10 +58,63 @@ class MolEditWidget(MolWidget):
 
 
     #Getters and Setters for properties
-    # actionChanged = QtCore.Signal(name="actionChanged")
+    actionChanged = QtCore.Signal(name="actionChanged")
     @property
     def action(self):
         return self._action
+
+    @action.setter
+    def action(self, actionname):
+        if actionname != self.action:
+            self._action = actionname
+            self.actionChanged.emit()
+
+    def setAction(self, actionname):
+        self.action = actionname
+
+
+    bondTypeChanged = QtCore.Signal(name="bondTypeChanged")
+    @property
+    def bondtype(self):
+        return self._bondtype
+
+    @bondtype.setter
+    def bondtype(self, bondtype):
+        if bondtype != self.bondtype:
+            self._bondtype = bondtype
+            self.bondTypeChanged.emit()
+
+    def setBondType(self, bondtype):
+        if type(bondtype) == Chem.rdchem.BondType:
+            self.bondtype = bondtype
+        elif isinstance(bondtype, str):
+            assert bondtype in self.bondtypes.keys(), "Bondtype %s not known"%bondtype
+            self.bondtype = self.bondtypes[bondtype]
+        else:
+            self.logger.error("Bondtype must be string or rdchem.BondType, not %s"%type(bondtype))
+
+    atomTypeChanged = QtCore.Signal(name="atomTypeChanged")
+    @property
+    def atomtype(self):
+        return self._atomtype
+
+    @atomtype.setter
+    def atomtype(self, atomtype):
+
+        if atomtype != self.atomtype:
+            self._atomtype = atomtype
+            self.atomTypeChanged.emit()
+
+    def setAtomType(self, atomtype):
+        self.logger.debug("Setting atomtype selection to %s"%atomtype)
+        if atomtype in self.symboltoint.keys():
+            self.logger.debug("Atomtype found in keys")
+            self.atomtype = self.symboltoint[atomtype]
+        elif type(atomtype) == IntType:
+            #Can we assert that its a proper number known by RDKit??
+            self.atomtype = atomtype
+        else:
+            self.error("Atomtype must be string or integer, not %s"%type(atomtype))
 
     def SVG_to_coord(self, x_svg, y_svg):
         """Function to translate from SVG coords to atom coords using scaling calculated from atomcoords (0,0) and (1,1). Returns rdkit Point2D."""
@@ -160,15 +213,83 @@ class MolEditWidget(MolWidget):
 
     def atom_click(self,atom):
         """Lookup tables to relate actions to context type with action type"""
-        self.select_atom_add(atom)
-        
+        #TODO more clean to use Dictionaries??
+        if self.action == "Add":
+            self.add_atom_to(atom)
+        elif self.action == "Remove":
+            self.remove_atom(atom)
+        elif self.action == "Select":
+            self.select_atom_add(atom)
+        elif self.action == "Replace":
+            self.replace_atom(atom)
+        elif self.action == "Add Bond":
+            self.add_bond(atom)
+        elif self.action == "Increase Charge":
+            self.increase_charge(atom)
+        elif self.action == "Decrease Charge":
+            self.decrease_charge(atom)
+        elif self.action == "RStoggle":
+            self.toogleRS(atom)
+        else:
+            self.logger.warning("The combination of Atom click and Action %s undefined"%self.action)
+
 
     def bond_click(self,bond):
-        self.select_bond(bond)
+        if self.action == "Add":
+            self.toggle_bond(bond)
+        elif self.action == "Add Bond":
+            self.replace_bond(bond)
+        elif self.action == "Remove":
+            self.remove_bond(bond)
+        elif self.action == "Select":
+            self.select_bond(bond)
+        elif self.action == "Replace":
+            self.replace_bond(bond)
+        elif self.action == "EZtoggle":
+            self.toogleEZ(bond)
+        else:
+            self.logger.warning("The combination of Bond click and Action %s undefined"%self.action)
 
     def canvas_click(self,point):
-        if len(self.selectedAtoms) > 0:
-            self.clearAtomSelection()
+        if self.action == "Add":
+            self.add_canvas_atom(point)
+        elif self.action == "Select":
+            #Click on canvas
+            #Unselect any selected
+            if len(self.selectedAtoms) > 0:
+                self.clearAtomSelection()
+        else:
+            self.logger.warning("The combination of Canvas click and Action %s undefined"%self.action)
+
+
+    #Atom Actions
+    def add_atom_to(self, atom):
+        rwmol = Chem.rdchem.RWMol(self.mol)
+        newatom = Chem.rdchem.Atom(self.atomtype)
+        newidx = rwmol.AddAtom(newatom)
+        newbond = rwmol.AddBond(atom.GetIdx(), newidx, order=self.bondtype)
+        self.mol = rwmol
+
+    def add_canvas_atom(self, point):
+        rwmol = Chem.rdchem.RWMol(self.mol)
+        if rwmol.GetNumAtoms() == 0:
+            point.x = 0.0
+            point.y = 0.0
+        newatom = Chem.rdchem.Atom(self.atomtype)
+        newidx = rwmol.AddAtom(newatom)
+        #This should only trigger if we have an empty canvas
+        if not rwmol.GetNumConformers():
+            rdDepictor.Compute2DCoords(rwmol)
+        conf = rwmol.GetConformer(0)
+        p3 = Point3D(point.x,point.y,0)
+        conf.SetAtomPosition(newidx,p3)
+        self.mol = rwmol
+
+    def remove_atom(self, atom):
+        rwmol = Chem.rdchem.RWMol(self.mol)
+        rwmol.RemoveAtom(atom.GetIdx())
+        self.clearAtomSelection() # Removing atoms updates Idx'es
+        self.mol = rwmol
 
     def select_atom(self, atom):
         self.selectAtom(atom.GetIdx())
@@ -180,6 +301,123 @@ class MolEditWidget(MolWidget):
             self.unselectAtom(selidx)
         else:
             self.selectAtomAdd(selidx)
+
+
+    def replace_atom(self, atom):
+        rwmol = Chem.rdchem.RWMol(self.mol)
+        newatom = Chem.rdchem.Atom(self.atomtype)
+        rwmol.ReplaceAtom(atom.GetIdx(), newatom)
+        self.mol = rwmol
+
+    def add_bond(self, atom):
+        """Double step action"""
+        if len(self.selectedAtoms) > 0:
+            selected = self.selectedAtoms[-1]
+            rwmol = Chem.rdchem.RWMol(self.mol)
+            rwmol.AddBond(selected, atom.GetIdx(), order=self.bondtype)
+            self.mol = rwmol
+        else:
+            self.select_atom(atom)
+
+    def toogleRS(self, atom):
+        self.backupMol()
+        #atom = self._mol.GetAtomWithIdx(atom.GetIdx())
+        stereotype = atom.GetChiralTag()
+        self.logger.debug("Current stereotype of clicked atom %s"%stereotype)
+        stereotypes = [Chem.rdchem.ChiralType.CHI_TETRAHEDRAL_CCW,
+#                        Chem.rdchem.ChiralType.CHI_OTHER, this one doesn't show a wiggly bond
+                        Chem.rdchem.ChiralType.CHI_UNSPECIFIED,
+                        Chem.rdchem.ChiralType.CHI_TETRAHEDRAL_CW,
+                        Chem.rdchem.ChiralType.CHI_TETRAHEDRAL_CCW]
+        newidx = np.argmax(np.array(stereotypes) == stereotype)+1
+        atom.SetChiralTag(stereotypes[newidx])
+        self.logger.debug("New stereotype set to %s"%atom.GetChiralTag())
+        #rdDepictor.Compute2DCoords(self._mol)
+        #self._mol.ClearComputedProps()
+        self._mol.UpdatePropertyCache()
+        rdDepictor.Compute2DCoords(self._mol)
+        self.molChanged.emit()
+
+    def assert_stereo_atoms(self, bond):
+        if len(bond.GetStereoAtoms()) ==0:
+            #get atoms and idx's of bond
+            bondatoms = [bond.GetBeginAtom(), bond.GetEndAtom()]
+            bondidx = [atom.GetIdx() for atom in bondatoms]
+            
+            #Figure out the atom idx's of the neigbor atoms, that are NOT the other end of the bond
+            stereoatoms = []
+            for bondatom in bondatoms:
+                neighboridxs = [atom.GetIdx() for atom in bondatom.GetNeighbors()]
+                neighboridx = [idx for idx in neighboridxs if idx not in bondidx][0]
+                stereoatoms.append(neighboridx)
+            #Set the bondstereoatoms
+            bond.SetStereoAtoms(stereoatoms[0], stereoatoms[1])
+        else:
+            pass
+
+    def toogleEZ(self, bond):
+        self.backupMol()
+        #Chem.rdmolops.AssignStereochemistry(self._mol,cleanIt=True,force=False)
+        stereotype = bond.GetStereo()
+        self.assert_stereo_atoms(bond)
+        self.logger.debug("Current stereotype of clicked atom %s"%stereotype)
+        #TODO: what if molecule already contain STEREOE or STEREOZ
+        stereotypes = [Chem.rdchem.BondStereo.STEREONONE,
+                        Chem.rdchem.BondStereo.STEREOCIS,
+                        Chem.rdchem.BondStereo.STEREOTRANS,
+#                        Chem.rdchem.BondStereo.STEREOANY, TODO, this should be wiggly, but is not
+                        Chem.rdchem.BondStereo.STEREONONE,]
+        newidx = np.argmax(np.array(stereotypes) == stereotype)+1
+        bond.SetStereo(stereotypes[newidx])
+        self.logger.debug("New stereotype set to %s"%bond.GetStereo())
+        try:
+            self.logger.debug("StereoAtoms are %s and %s"%bond.GetStereoAtoms()[0], bond.GetStereoAtoms()[1])
+        except:
+            self.logger.warning("StereoAtoms not defined")
+        self._mol.ClearComputedProps()
+        #Chem.rdmolops.AssignStereochemistry(self._mol,cleanIt=True,force=False)
+        self._mol.UpdatePropertyCache()
+        rdDepictor.Compute2DCoords(self._mol)
+        self.molChanged.emit()
+
+    #Bond actions
+    def toggle_bond(self, bond):
+        self.backupMol()
+        bondtype = bond.GetBondType()
+        bondtypes = [Chem.rdchem.BondType.TRIPLE,
+                    Chem.rdchem.BondType.SINGLE,
+                    Chem.rdchem.BondType.DOUBLE,
+                    Chem.rdchem.BondType.TRIPLE]
+        #Find the next type in the list based on current
+        #If current is not in list? Then it selects the first and add 1 => SINGLE
+        newidx = np.argmax(np.array(bondtypes) == bondtype)+1
+        newtype = bondtypes[newidx]
+        bond.SetBondType(newtype)
+        self.molChanged.emit()
+
+
+    #self.replace_bond(bond)
+    def replace_bond(self, bond):
+        self.backupMol()
+        self.logger.debug("Replacing bond %s"%bond)
+        bond.SetBondType(self.bondtype)
+        self.molChanged.emit()
+
+    #self.remove_bond(bond)
+    def remove_bond(self, bond):
+        rwmol = Chem.rdchem.RWMol(self.mol)
+        rwmol.RemoveBond(bond.GetBeginAtomIdx(), bond.GetEndAtomIdx())
+        self.mol = rwmol
+
+    def increase_charge(self, atom):
+        self.backupMol()
+        atom.SetFormalCharge(atom.GetFormalCharge()+1)
+        self.molChanged.emit()
+
+    def decrease_charge(self, atom):
+        self.backupMol()
+        atom.SetFormalCharge(atom.GetFormalCharge()-1)
+        self.molChanged.emit()
 
     #self.select_bond(bond)
     def select_bond(self, bond):

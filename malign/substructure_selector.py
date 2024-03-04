@@ -82,7 +82,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mainToolBar = self.addToolBar('Main')
         #Main action bar
         self.mainToolBar.addAction(self.openAction)
-        self.mainToolBar.addAction(self.saveAction)
         self.mainToolBar.addSeparator()
         self.mainToolBar.addAction(self.cleanCoordinatesAction)
         self.mainToolBar.addSeparator()
@@ -180,11 +179,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                   statusTip="Open an existing file",
                                   triggered=self.openFile)
 
-        self.saveAction = QAction( QIcon(self.pixmappath + '/icons8-Save.png'), 'S&ave',
-                                  self, 
-                                  shortcut=QKeySequence.Save,
-                                  statusTip="Save file",
-                                  triggered=self.saveFile)
+       
 
         self.exitAction = QAction( QIcon(self.pixmappath + 'icons8-Shutdown.png'), 'E&xit',
                                    self, shortcut="Ctrl+Q",
@@ -197,14 +192,14 @@ class MainWindow(QtWidgets.QMainWindow):
                            statusTip="Undo/Redo changes to molecule Ctrl+Z",
                            triggered=self.editor.undo, objectName="undo")
 
-        self.deleteMoleculeAction = QAction( QIcon(self.pixmappath + 'icons8-Trash.png'), 'Delete &X',
-                                   self, shortcut="Ctrl+X",
-                                   statusTip="Remove this molecule from canvas Ctrl+X",
+        self.deleteMoleculeAction = QAction( QIcon(self.pixmappath + 'icons8-Trash.png'), 'Delete molecule from set (Del)',
+                                   self, shortcut="Del",
+                                   statusTip="Remove this molecule from set (Del)",
                                    triggered=self.clearCanvas, objectName="Clear Canvas")
 
-        self.cleanCoordinatesAction = QAction( QIcon(self.pixmappath + 'icons8-Broom.png'), 'Recalculate coordinates &F',
-                                   self, shortcut="Ctrl+F",
-                                   statusTip="Re-calculates coordinates and redraw",
+        self.cleanCoordinatesAction = QAction( QIcon(self.pixmappath + 'icons8-Broom.png'), 'Recalculate coordinates (F9)',
+                                   self, shortcut="F9",
+                                   statusTip="Re-calculates coordinates and redraw (F9)",
                                    triggered=self.editor.canon_coords_and_draw, objectName="Recalculate Coordinates")
 
 
