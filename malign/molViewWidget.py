@@ -9,6 +9,7 @@ import logging
 
 import numpy as np
 from rdkit import Chem
+from rdkit.Chem.rdchem import Mol
 from rdkit.Chem import AllChem
 from rdkit.Chem import Draw
 from rdkit.Chem import rdDepictor
@@ -30,6 +31,7 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
 
         #This sets the window to delete itself when its closed, so it doesn't keep lingering in the background
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+
         #Private Properties
         self._mol = None  #The molecule
         self._drawmol = None  #Molecule for drawing
@@ -41,8 +43,9 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
         self.selectionChanged.connect(self.draw)
 
         #Initialize class with the mol passed
-        self.mol = mol
 
+        self.mol = mol
+        
     ##Properties and their wrappers
     @property
     def loglevel(self):
@@ -111,6 +114,7 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
     def setSelectedAtoms(self, atomlist):
         self.selectedAtoms = atomlist
 
+  
     #Actions and functions
     @QtCore.Slot()
     def draw(self):
@@ -161,8 +165,19 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
 
     sanitizeSignal = QtCore.Signal(str, name="sanitizeSignal")
 
+    def history_save(self):
+        """Saves the current molecule to the history stack. This is used to
+        implement undo/redo functionality.
+        """
+        self._prevmol = Chem.Mol(self._mol.ToBinary())
+    
+    def undo(self):
+        self.mol = Chem.Mol(self._prevmol.ToBinary())
+
     @QtCore.Slot()
     def sanitizeMol(self, kekulize=False, drawkekulize=False):
+        # self.kl_prevmol = Chem.Mol(self._mol.ToBinary())  #Copy
+        self.history_save()
         self.computeNewCoords()
         self._drawmol = Chem.Mol(self._mol.ToBinary())  #Is this necessary?
         try:
