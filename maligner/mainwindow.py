@@ -10,8 +10,8 @@ from PySide6.QtWidgets import *
 from PySide6 import QtWidgets
 
 #Import model
-from malign.molEditWidget import MolEditWidget
-from malign.substructure_selector import SubstructureSelectorDialog
+from maligner.molEditWidget import MolEditWidget
+from maligner.substructure_selector import SubstructureSelectorDialog
 
 from rdkit import Chem
 
@@ -49,7 +49,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setWindowTitle(str(filename))
 
     def initGUI(self):
-        self.setWindowTitle("malign - An Open-Source Molecular Alignment Tool")
+        self.setWindowTitle("maligner - An Open-Source Molecular Alignment Tool")
         self.setWindowIcon(QIcon(self.pixmappath + 'appicon.svg.png'))
         self.setGeometry(100, 100, 200, 150)
 
@@ -168,8 +168,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def aboutHelp(self):
         QMessageBox.about(
-            self, "About malign",
-            """malign is an Open-Source Molecular Alignment Tool.\n\n\nBased on RDKit: http://www.rdkit.org/\nBased on rdeditor: https://github.com/EBjerrum/rdeditor\nSome icons from: http://icons8.com\nSource code: https://github.com/hellmrf/malign\n\nReleased under GPL-v3.0."""
+            self, "About maligner",
+            """maligner is an Open-Source Molecular Alignment Tool.\n\n\nBased on RDKit: http://www.rdkit.org/\nBased on rdeditor: https://github.com/EBjerrum/rdeditor\nSome icons from: http://icons8.com\nSource code: https://github.com/hellmrf/maligner\n\nReleased under GPL-v3.0."""
         )
 
     def setAction(self):

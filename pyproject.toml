@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "malign"
+name = "maligner"
 dynamic = ["version"]
 description = "An Open-Source Molecular Alignment Tool"
 readme = "README.md"
@@ -18,18 +18,18 @@ dependencies = [
 ]
 
 [project.gui-scripts]
-malign = "malign:main"
+maligner = "maligner.mainwindow:launch"
 
 [project.urls]
-Homepage = "https://github.com/hellmrf/malign"
+Homepage = "https://github.com/hellmrf/maligner"
 
 [tool.hatch.version]
-path = "malign/__init__.py"
+path = "maligner/__init__.py"
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "/malign",
+    "/maligner",
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["/malign"]
+packages = ["/maligner"]

@@ -10,7 +10,7 @@ from rdkit.Chem import rdDepictor
 from rdkit.Geometry.rdGeometry import Point2D, Point3D
 #from rdkit.Chem.AllChem import GenerateDepictionMatching3DStructure
 
-from malign.molViewWidget import MolWidget
+from maligner.molViewWidget import MolWidget
 
 from types import *
 

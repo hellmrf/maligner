@@ -12,7 +12,7 @@ from PySide6 import QtWidgets
 from PySide6.QtWidgets import QDialog, QVBoxLayout
 
 #Import model
-from malign.molEditWidget import MolEditWidget
+from maligner.molEditWidget import MolEditWidget
 
 from rdkit import Chem
 

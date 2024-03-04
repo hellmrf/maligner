@@ -1,3 +1,3 @@
-pip uninstall malign -y
+pip uninstall maligner -y
 hatch build -t sdist
-pip install dist/malign-0.0.0.tar.gz
+pip install dist/maligner-0.0.0.tar.gz
