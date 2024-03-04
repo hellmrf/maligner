@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 from __future__ import print_function
+from pathlib import Path
 
 
 # Import required modules
 import sys, time, os
+from typing import Optional
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from PySide6.QtCore import QByteArray
@@ -13,21 +15,23 @@ from PySide6 import QtSvg
 #Import model
 from malign.molEditWidget import MolEditWidget
 from malign.ptable_widget import PTable
+from malign.substructure_selector import SubstructureSelectorDialog
 
 from rdkit import Chem
 
 # The main window class
 class MainWindow(QtWidgets.QMainWindow):
     # Constructor function
-    def __init__(self, fileName=None, loglevel="WARNING"):
+    def __init__(self, filename: Optional[Path | str]=None, loglevel="WARNING"):
         super(MainWindow,self).__init__()
         self.pixmappath = os.path.abspath(os.path.dirname(__file__)) + '/pixmaps/'
         self.loglevels = ["Critical","Error","Warning","Info","Debug","Notset"]
         self.editor = MolEditWidget()
-        self.ptable = PTable()
+        self.substructure_selector = SubstructureSelectorDialog(filename=filename)
         self._fileName = None
-        self.initGUI(fileName = fileName)
-        self.ptable.atomtypeChanged.connect(self.setAtomTypeName)
+        self.initGUI(fileName = filename)
+        # TODO: selectionChanges ainda não existe
+        # self.substructure_selector.selectionChanged.connect(self.setAtomTypeName)
         self.editor.logger.setLevel(loglevel)
 
     #Properties
@@ -119,6 +123,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mainToolBar.addAction(self.deleteMoleculeAction)
         self.mainToolBar.addSeparator()
         self.mainToolBar.addAction(self.undoAction)
+        self.mainToolBar.addAction(self.openSelectorAction)
 
     def loadMolFile(self, filename):
         self.fileName = filename
@@ -146,6 +151,9 @@ class MainWindow(QtWidgets.QMainWindow):
 #            file.write(self.textEdit.toPlainText())
             self.statusBar().showMessage("File saved", 2000)
 
+    def open_selector(self):
+        self.substructure_selector.show()
+
     def clearCanvas(self):
         self.editor.mol = None
         self.fileName = None
@@ -157,7 +165,7 @@ class MainWindow(QtWidgets.QMainWindow):
         event.ignore()
 
     def exitFile(self):
-        self.ptable.close()
+        self.substructure_selector.close()
         exit(0) #TODO, how to exit qapplication from within class instance?
 
 
@@ -195,7 +203,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.myStatusBar.showMessage("Atomtype %s selected"%atomname)
 
     def openPtable(self):
-        self.ptable.show()
+        self.substructure_selector.show()
 
     def setLogLevel(self):
         loglevel = self.sender().objectName().split(':')[-1].upper()
@@ -245,6 +253,11 @@ class MainWindow(QtWidgets.QMainWindow):
                                    self, shortcut="Ctrl+F",
                                    statusTip="Re-calculates coordinates and redraw",
                                    triggered=self.editor.canon_coords_and_draw, objectName="Recalculate Coordinates")
+
+        self.openSelectorAction = QAction( QIcon(self.pixmappath + 'icons8-Molecule.png'), 'Open Selector',
+                                   self, shortcut="S",
+                                   statusTip="Opens the molecule selector for some molecule",
+                                   triggered=self.open_selector, objectName="Open selector")
 
         self.loglevelactions = {}
         for key in self.loglevels:
