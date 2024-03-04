@@ -32,9 +32,8 @@ class MainWindow(QtWidgets.QMainWindow):
             "Critical", "Error", "Warning", "Info", "Debug", "Notset"
         ]
         self.editor = MolEditWidget()
-        self.substructure_selector = SubstructureSelectorDialog(
-            filename=filename)
-        self._fileName = None
+        self.substructure_selector = SubstructureSelectorDialog(filename=filename)
+        self._filename = filename
         self.initGUI(fileName=filename)
         # TODO: selectionChanges ainda não existe
         # self.substructure_selector.selectionChanged.connect(self.setAtomTypeName)
@@ -42,13 +41,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #Properties
     @property
-    def fileName(self):
-        return self._fileName
+    def filename(self):
+        return self._filename
 
-    @fileName.setter
-    def fileName(self, filename):
-        if filename != self._fileName:
-            self._fileName = filename
+    @filename.setter
+    def filename(self, filename):
+        if filename != self._filename:
+            self._filename = filename
             self.setWindowTitle(str(filename))
 
     def initGUI(self, fileName=None):
@@ -59,7 +58,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.center = self.editor
         self.center.setFixedSize(600, 600)
         self.setCentralWidget(self.center)
-        self.fileName = fileName
+        self.filename = fileName
 
         self.filters = "MOL Files (*.mol *.mol);;Any File (*)"
         self.SetupComponents()
@@ -67,8 +66,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.infobar = QLabel("")
         self.myStatusBar.addPermanentWidget(self.infobar, 0)
 
-        if self.fileName is not None:
-            self.editor.logger.info("Loading model from %s" % self.fileName)
+        if self.filename is not None:
+            self.editor.logger.info("Loading model from %s" % self.filename)
             self.loadMolFile(fileName)
 
         self.editor.sanitizeSignal.connect(self.infobar.setText)
@@ -131,31 +130,31 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mainToolBar.addAction(self.openSelectorAction)
 
     def loadMolFile(self, filename):
-        self.fileName = filename
-        mol = Chem.MolFromMolFile(str(self.fileName),
+        self.filename = filename
+        mol = Chem.MolFromMolFile(str(self.filename),
                                   sanitize=False,
                                   strictParsing=False)
         self.editor.mol = mol
         self.statusBar().showMessage("File opened")
 
     def openFile(self):
-        self.fileName, self.filterName = QFileDialog.getOpenFileName(
+        self.filename, self.filterName = QFileDialog.getOpenFileName(
             self, caption="Open MOL file", filter=self.filters)
-        self.loadMolFile(self.fileName)
+        self.loadMolFile(self.filename)
 
     def saveFile(self):
-        if self.fileName != None:
-            Chem.MolToMolFile(self.editor.mol, str(self.fileName))
+        if self.filename != None:
+            Chem.MolToMolFile(self.editor.mol, str(self.filename))
         else:
             self.saveAsFile()
 
     def saveAsFile(self):
-        self.fileName, self.filterName = QFileDialog.getSaveFileName(
+        self.filename, self.filterName = QFileDialog.getSaveFileName(
             self, filter=self.filters)
-        if (self.fileName != ''):
-            if self.fileName[-4:].upper() != ".MOL":
-                self.fileName = self.fileName + ".mol"
-            Chem.MolToMolFile(self.editor.mol, str(self.fileName))
+        if (self.filename != ''):
+            if self.filename[-4:].upper() != ".MOL":
+                self.filename = self.filename + ".mol"
+            Chem.MolToMolFile(self.editor.mol, str(self.filename))
             #            file = open(self.fileName, 'w')
             #            file.write(self.textEdit.toPlainText())
             self.statusBar().showMessage("File saved", 2000)
@@ -165,7 +164,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def clearCanvas(self):
         self.editor.mol = None
-        self.fileName = None
+        self.filename = None
         self.exitFile()
         self.statusBar().showMessage("Molecule removed from canvas", 2000)
 
