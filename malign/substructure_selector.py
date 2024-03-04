@@ -15,7 +15,6 @@ from PySide6.QtWidgets import QDialog, QVBoxLayout
 
 #Import model
 from malign.molEditWidget import MolEditWidget
-from malign.ptable_widget import PTable
 
 from rdkit import Chem
 
@@ -31,10 +30,10 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
             "Critical", "Error", "Warning", "Info", "Debug", "Notset"
         ]
         self.editor = MolEditWidget()
-        self.ptable = PTable()
         self._filename = filename
         self.initGUI(filename=filename)
-        self.ptable.atomtypeChanged.connect(self.setAtomTypeName)
+        # TODO: conectar signal selectionChanged
+        # self.editor.selectionChanged.connect(self.setAtomTypeName)
         self.editor.logger.setLevel(loglevel)
 
     #Properties
@@ -128,7 +127,6 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
         event.ignore()
 
     def exitFile(self):
-        self.ptable.close()
         exit(0)  #TODO, how to exit qapplication from within class instance?
 
     # Function to show Diaglog box with provided Title and Message
@@ -168,9 +166,6 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
     def setAtomTypeName(self, atomname):
         self.editor.setAtomType(str(atomname))
         self.myStatusBar.showMessage("Atomtype %s selected" % atomname)
-
-    def openPtable(self):
-        self.ptable.show()
 
     def setLogLevel(self):
         loglevel = self.sender().objectName().split(':')[-1].upper()

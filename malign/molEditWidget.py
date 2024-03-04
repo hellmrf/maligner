@@ -18,8 +18,6 @@ from malign.molViewWidget import MolWidget
 
 from types import *
 
-from malign.ptable import symboltoint
-
 debug = True
 
 
@@ -37,7 +35,7 @@ class MolEditWidget(MolWidget):
         self.coordlist = None  #SVG coords of the current mols atoms
 
         #Standard atom types
-        self.symboltoint = symboltoint
+        # self.symboltoint = symboltoint
 
         self.bondtypes = Chem.rdchem.BondType.names  #A dictionary with all available rdkit bondtypes
 
@@ -112,6 +110,7 @@ class MolEditWidget(MolWidget):
             self.atomTypeChanged.emit()
 
     def setAtomType(self, atomtype):
+        raise NotImplementedError("This function is not implemented anymore.")
         self.logger.debug("Setting atomtype selection to %s" % atomtype)
         if atomtype in self.symboltoint.keys():
             self.logger.debug("Atomtype found in keys")

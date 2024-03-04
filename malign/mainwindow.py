@@ -13,7 +13,6 @@ from PySide6 import QtSvg
 
 #Import model
 from malign.molEditWidget import MolEditWidget
-from malign.ptable_widget import PTable
 from malign.substructure_selector import SubstructureSelectorDialog
 
 from rdkit import Chem
