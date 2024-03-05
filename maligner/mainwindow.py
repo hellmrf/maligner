@@ -10,8 +10,8 @@ from PySide6.QtWidgets import *
 from PySide6 import QtWidgets
 
 #Import model
-from maligner.molEditWidget import MolEditWidget
-from maligner.substructure_selector import SubstructureSelectorDialog
+from maligner.widgets.molEditWidget import MolEditWidget
+from maligner.widgets.substructure_selector import SubstructureSelectorDialog
 
 from rdkit import Chem
 
