@@ -1,36 +1,22 @@
-#!/usr/bin/env python
-from __future__ import print_function
-from pathlib import Path
-
-# Import required modules
 import sys, os
+from pathlib import Path
 from typing import Optional
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
-from PySide6 import QtWidgets
 
-#Import model
+from rdkit import Chem
+from PySide6 import QtGui, QtWidgets
+
 from maligner.widgets.molEditWidget import MolEditWidget
 from maligner.widgets.substructure_selector import SubstructureSelectorDialog
 
-from rdkit import Chem
 
-
-# The main window class
 class MainWindow(QtWidgets.QMainWindow):
     # Constructor function
-    def __init__(self,
-                 filename: Optional[Path | str] = None,
-                 loglevel="WARNING"):
+    def __init__(self, filename: Optional[Path | str] = None, loglevel="WARNING"):
         super(MainWindow, self).__init__()
-        self.pixmappath = os.path.abspath(
-            os.path.dirname(__file__)) + '/pixmaps/'
-        self.loglevels = [
-            "Critical", "Error", "Warning", "Info", "Debug", "Notset"
-        ]
+        self.pixmappath = os.path.abspath(os.path.dirname(__file__)) + '/pixmaps/'
+        self.loglevels = ["Critical", "Error", "Warning", "Info", "Debug", "Notset"]
         self.editor = MolEditWidget()
-        self.substructure_selector = SubstructureSelectorDialog(
-            filename=filename)
+        self.substructure_selector = SubstructureSelectorDialog(filename=filename)
         self._filename = filename
         self.initGUI()
         # TODO: selectionChanges ainda não existe
@@ -50,7 +36,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def initGUI(self):
         self.setWindowTitle("maligner - An Open-Source Molecular Alignment Tool")
-        self.setWindowIcon(QIcon(self.pixmappath + 'appicon.svg.png'))
+        self.setWindowIcon(QtGui.QIcon(self.pixmappath + 'appicon.svg.png'))
         self.setGeometry(100, 100, 200, 150)
 
         # self.center = self.editor
@@ -60,7 +46,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.filters = "MOL Files (*.mol *.mol);;Any File (*)"
         self.SetupComponents()
 
-        self.infobar = QLabel("")
+        self.infobar = QtWidgets.QLabel("")
         self.myStatusBar.addPermanentWidget(self.infobar, 0)
 
         if self.filename is not None:
@@ -72,8 +58,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to setup status bar, central widget, menu bar, tool bar
     def SetupComponents(self):
-        self.myStatusBar = QStatusBar()
-        #        self.molcounter = QLabel("-/-")
+        self.myStatusBar = QtWidgets.QStatusBar()
+        #        self.molcounter = QtWidgets.QLabel("-/-")
         #        self.myStatusBar.addPermanentWidget(self.molcounter, 0)
         self.setStatusBar(self.myStatusBar)
         self.myStatusBar.showMessage('Ready', 10000)
@@ -121,14 +107,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def loadMolFile(self, filename):
         self.filename = filename
-        mol = Chem.MolFromMolFile(str(self.filename),
-                                  sanitize=False,
-                                  strictParsing=False)
+        mol = Chem.MolFromMolFile(str(self.filename), sanitize=False, strictParsing=False)
         self.editor.mol = mol
         self.statusBar().showMessage("File opened")
 
     def openFile(self):
-        self.filename, self.filterName = QFileDialog.getOpenFileName(
+        self.filename, self.filterName = QtWidgets.QFileDialog.getOpenFileName(
             self, caption="Open MOL file", filter=self.filters)
         self.loadMolFile(self.filename)
 
@@ -139,8 +123,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.saveAsFile()
 
     def saveAsFile(self):
-        self.filename, self.filterName = QFileDialog.getSaveFileName(
-            self, filter=self.filters)
+        self.filename, self.filterName = QtWidgets.QFileDialog.getSaveFileName(self,
+                                                                               filter=self.filters)
         if (self.filename != ''):
             if self.filename[-4:].upper() != ".MOL":
                 self.filename = self.filename + ".mol"
@@ -164,10 +148,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def exitFile(self):
         self.substructure_selector.close()
-        exit(0)  #TODO, how to exit qapplication from within class instance?
+        exit(0)  #TODO, how to exit QtWidgets.QApplication from within class instance?
 
     def aboutHelp(self):
-        QMessageBox.about(
+        QtWidgets.QMessageBox.about(
             self, "About maligner",
             """maligner is an Open-Source Molecular Alignment Tool.\n\n\nBased on RDKit: http://www.rdkit.org/\nBased on rdeditor: https://github.com/EBjerrum/rdeditor\nSome icons from: http://icons8.com\nSource code: https://github.com/hellmrf/maligner\n\nReleased under GPL-v3.0."""
         )
@@ -175,20 +159,17 @@ class MainWindow(QtWidgets.QMainWindow):
     def setAction(self):
         sender = self.sender()
         self.editor.setAction(sender.objectName())
-        self.myStatusBar.showMessage("Action %s selected" %
-                                     sender.objectName())
+        self.myStatusBar.showMessage("Action %s selected" % sender.objectName())
 
     def setBondType(self):
         sender = self.sender()
         self.editor.setBondType(sender.objectName())
-        self.myStatusBar.showMessage("Bondtype %s selected" %
-                                     sender.objectName())
+        self.myStatusBar.showMessage("Bondtype %s selected" % sender.objectName())
 
     def setAtomType(self):
         sender = self.sender()
         self.editor.setAtomType(sender.objectName())
-        self.myStatusBar.showMessage("Atomtype %s selected" %
-                                     sender.objectName())
+        self.myStatusBar.showMessage("Atomtype %s selected" % sender.objectName())
 
     def setAtomTypeName(self, atomname):
         self.editor.setAtomType(str(atomname))
@@ -206,43 +187,41 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to create actions for menus and toolbars
     def CreateActions(self):
-        self.openAction = QAction(QIcon(self.pixmappath + 'open.png'),
-                                  'O&pen',
-                                  self,
-                                  shortcut=QKeySequence.Open,
-                                  statusTip="Open an existing file",
-                                  triggered=self.openFile)
+        self.openAction = QtGui.QAction(QtGui.QIcon(self.pixmappath + 'open.png'),
+                                        'O&pen',
+                                        self,
+                                        shortcut=QtGui.QKeySequence.Open,
+                                        statusTip="Open an existing file",
+                                        triggered=self.openFile)
 
-        self.saveAction = QAction(QIcon(self.pixmappath + '/icons8-Save.png'),
-                                  'S&ave',
-                                  self,
-                                  shortcut=QKeySequence.Save,
-                                  statusTip="Save file",
-                                  triggered=self.saveFile)
+        self.saveAction = QtGui.QAction(QtGui.QIcon(self.pixmappath + '/icons8-Save.png'),
+                                        'S&ave',
+                                        self,
+                                        shortcut=QtGui.QKeySequence.Save,
+                                        statusTip="Save file",
+                                        triggered=self.saveFile)
 
-        self.exitAction = QAction(QIcon(self.pixmappath +
-                                        'icons8-Shutdown.png'),
-                                  'E&xit',
-                                  self,
-                                  shortcut="Ctrl+Q",
-                                  statusTip="Exit the Application",
-                                  triggered=self.exitFile)
+        self.exitAction = QtGui.QAction(QtGui.QIcon(self.pixmappath + 'icons8-Shutdown.png'),
+                                        'E&xit',
+                                        self,
+                                        shortcut="Ctrl+Q",
+                                        statusTip="Exit the Application",
+                                        triggered=self.exitFile)
 
-        self.aboutAction = QAction(QIcon(self.pixmappath + 'about.png'),
-                                   'A&bout',
-                                   self,
-                                   statusTip="Displays info about text editor",
-                                   triggered=self.aboutHelp)
+        self.aboutAction = QtGui.QAction(QtGui.QIcon(self.pixmappath + 'about.png'),
+                                         'A&bout',
+                                         self,
+                                         statusTip="Displays info about text editor",
+                                         triggered=self.aboutHelp)
 
-        self.aboutQtAction = QAction(
-            "About &Qt",
-            self,
-            statusTip="Show the Qt library's About box",
-            triggered=QApplication.aboutQt)
+        self.aboutQtAction = QtGui.QAction("About &Qt",
+                                           self,
+                                           statusTip="Show the Qt library's About box",
+                                           triggered=QtWidgets.QApplication.aboutQt)
 
         #Misc Actions
-        self.deleteMoleculeAction = QAction(
-            QIcon(self.pixmappath + 'icons8-Trash.png'),
+        self.deleteMoleculeAction = QtGui.QAction(
+            QtGui.QIcon(self.pixmappath + 'icons8-Trash.png'),
             'Delete &X',
             self,
             shortcut="Ctrl+X",
@@ -250,8 +229,8 @@ class MainWindow(QtWidgets.QMainWindow):
             triggered=self.clearCanvas,
             objectName="Clear Canvas")
 
-        self.anchorAction = QAction(
-            QIcon(self.pixmappath + 'icons8-Anchor.png'),
+        self.anchorAction = QtGui.QAction(
+            QtGui.QIcon(self.pixmappath + 'icons8-Anchor.png'),
             'Anchor current molecule &A',
             self,
             shortcut="A",
@@ -259,8 +238,8 @@ class MainWindow(QtWidgets.QMainWindow):
             triggered=self.set_anchor,
             objectName="Set Anchor")
 
-        self.openSelectorAction = QAction(
-            QIcon(self.pixmappath + 'icons8-Molecule.png'),
+        self.openSelectorAction = QtGui.QAction(
+            QtGui.QIcon(self.pixmappath + 'icons8-Molecule.png'),
             'Open Selector',
             self,
             shortcut="S",
@@ -270,18 +249,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.loglevelactions = {}
         for key in self.loglevels:
-            self.loglevelactions[key] = QAction(
-                key,
-                self,
-                statusTip="Set logging level to %s" % key,
-                triggered=self.setLogLevel,
-                objectName="loglevel:%s" % key)
+            self.loglevelactions[key] = QtGui.QAction(key,
+                                                      self,
+                                                      statusTip="Set logging level to %s" % key,
+                                                      triggered=self.setLogLevel,
+                                                      objectName="loglevel:%s" % key)
         self.loglevelactions["Debug"].setChecked(True)
 
 
 def launch(loglevel="WARNING"):
     "Function that launches the mainWindow Application"
-    myApp = QApplication(sys.argv)
+    myApp = QtWidgets.QApplication(sys.argv)
     argv1 = Path(sys.argv[1]) if len(sys.argv) > 1 else None
     if argv1 and argv1.is_file():
         mainWindow = MainWindow(filename=argv1, loglevel=loglevel)

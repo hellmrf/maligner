@@ -1,23 +1,12 @@
-#!/usr/bin/env python
-from __future__ import print_function
 from pathlib import Path
-
-# Import required modules
 import sys, os
+
 from typing import Optional
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
-from PySide6 import QtWidgets
-
-from PySide6.QtWidgets import QDialog, QVBoxLayout
-
-#Import model
-from maligner.widgets.molEditWidget import MolEditWidget
-
+from PySide6 import QtGui, QtWidgets
 from rdkit import Chem
 
+from maligner.widgets.molEditWidget import MolEditWidget
 
-# The main window class
 class SubstructureSelectorWindow(QtWidgets.QMainWindow):
     # Constructor function
     def __init__(self, filename: Optional[Path | str], loglevel="WARNING"):
@@ -47,7 +36,7 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
 
     def initGUI(self, filename=None):
         self.setWindowTitle("Substructure selector")
-        self.setWindowIcon(QIcon(self.pixmappath + 'icons8-Cursor.png'))
+        self.setWindowIcon(QtGui.QIcon(self.pixmappath + 'icons8-Cursor.png'))
         self.setGeometry(100, 100, 200, 150)
 
         self.center = self.editor
@@ -58,7 +47,7 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
         self.filters = "MOL Files (*.mol *.mol);;Any File (*)"
         self.SetupComponents()
 
-        self.infobar = QLabel("")
+        self.infobar = QtWidgets.QLabel("")
         self.myStatusBar.addPermanentWidget(self.infobar, 0)
 
         if self.fileName is not None:
@@ -70,7 +59,7 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
 
     # Function to setup status bar, central widget, menu bar, tool bar
     def SetupComponents(self):
-        self.myStatusBar = QStatusBar()
+        self.myStatusBar = QtWidgets.QStatusBar()
         self.setStatusBar(self.myStatusBar)
         self.myStatusBar.showMessage('Ready', 10000)
 
@@ -93,7 +82,7 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
         self.statusBar().showMessage("File opened")
 
     def openFile(self):
-        self.fileName, self.filterName = QFileDialog.getOpenFileName(
+        self.fileName, self.filterName = QtWidgets.QFileDialog.getOpenFileName(
             self, caption="Open MOL file", filter=self.filters)
         self.loadMolFile(self.fileName)
 
@@ -104,7 +93,7 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
             self.saveAsFile()
 
     def saveAsFile(self):
-        self.fileName, self.filterName = QFileDialog.getSaveFileName(
+        self.fileName, self.filterName = QtWidgets.QFileDialog.getSaveFileName(
             self, filter=self.filters)
         if (self.fileName != ''):
             if self.fileName[-4:].upper() != ".MOL":
@@ -125,20 +114,20 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
         event.ignore()
 
     def exitFile(self):
-        exit(0)  #TODO, how to exit qapplication from within class instance?
+        exit(0)  #TODO, how to exit QtWidgets.QApplication from within class instance?
 
     # Function to show Diaglog box with provided Title and Message
     def msgApp(self, title, msg):
-        userInfo = QMessageBox.question(self, title, msg,
-                                        QMessageBox.Yes | QMessageBox.No)
-        if userInfo == QMessageBox.Yes:
+        userInfo = QtWidgets.QMessageBox.question(self, title, msg,
+                                        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        if userInfo == QtWidgets.QMessageBox.Yes:
             return "Y"
-        if userInfo == QMessageBox.No:
+        if userInfo == QtWidgets.QMessageBox.No:
             return "N"
         self.close()
 
     def aboutHelp(self):
-        QMessageBox.about(
+        QtWidgets.QMessageBox.about(
             self, "About Simple Molecule Editor",
             """A Simple Molecule Editor where you can edit molecules\nBased on RDKit! http://www.rdkit.org/ \nSome icons from http://icons8.com\n\nSource code: https://github.com/EBjerrum/rdeditor"""
         )
@@ -171,17 +160,17 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
 
     # Function to create actions for menus and toolbars
     def CreateActions(self):
-        self.exitAction = QAction(QIcon(self.pixmappath +
-                                        'icons8-Shutdown.png'),
-                                  'E&xit',
-                                  self,
-                                  shortcut="Ctrl+Q",
-                                  statusTip="Exit the Application",
-                                  triggered=self.exitFile)
+        self.exitAction = QtGui.QAction(QtGui.QIcon(self.pixmappath +
+                                    'icons8-Shutdown.png'),
+                                'E&xit',
+                                self,
+                                shortcut="Ctrl+Q",
+                                statusTip="Exit the Application",
+                                triggered=self.exitFile)
 
         #Misc Actions
-        self.undoAction = QAction(
-            QIcon(self.pixmappath + 'prev.png'),
+        self.undoAction = QtGui.QAction(
+            QtGui.QIcon(self.pixmappath + 'prev.png'),
             'U&ndo',
             self,
             shortcut="Ctrl+Z",
@@ -189,8 +178,8 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
             triggered=self.editor.undo,
             objectName="undo")
 
-        self.deleteMoleculeAction = QAction(
-            QIcon(self.pixmappath + 'icons8-Trash.png'),
+        self.deleteMoleculeAction = QtGui.QAction(
+            QtGui.QIcon(self.pixmappath + 'icons8-Trash.png'),
             'Delete molecule from set (Del)',
             self,
             shortcut="Del",
@@ -198,8 +187,8 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
             triggered=self.clearCanvas,
             objectName="Clear Canvas")
 
-        self.cleanCoordinatesAction = QAction(
-            QIcon(self.pixmappath + 'icons8-Broom.png'),
+        self.cleanCoordinatesAction = QtGui.QAction(
+            QtGui.QIcon(self.pixmappath + 'icons8-Broom.png'),
             'Recalculate coordinates (F9)',
             self,
             shortcut="F9",
@@ -208,22 +197,21 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
             objectName="Recalculate Coordinates")
 
 
-class SubstructureSelectorDialog(QDialog):
+class SubstructureSelectorDialog(QtWidgets.QDialog):
 
     def __init__(self, filename: Optional[Path | str], loglevel="WARNING"):
         super().__init__()
-        self.ss_window = SubstructureSelectorWindow(
-            filename, loglevel)
-        layout = QVBoxLayout()
+        self.ss_window = SubstructureSelectorWindow(filename, loglevel)
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.ss_window)
         self.setLayout(layout)
         self.setWindowTitle("Substructure Selector")
-        self.setWindowIcon(QIcon(self.ss_window.pixmappath + 'icons8-Cursor.png'))
+        self.setWindowIcon(QtGui.QIcon(self.ss_window.pixmappath + 'icons8-Cursor.png'))
 
 
 def launch(loglevel="WARNING"):
     "Function that launches the mainWindow Application"
-    myApp = QApplication(sys.argv)
+    myApp = QtWidgets.QApplication(sys.argv)
     argv1 = Path(sys.argv[1]) if len(sys.argv) > 1 else None
     if argv1 and argv1.is_file():
         mainWindow = SubstructureSelectorWindow(filename=argv1,
