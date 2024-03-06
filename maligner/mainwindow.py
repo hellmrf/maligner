@@ -13,7 +13,6 @@ class MainWindow(QtWidgets.QMainWindow):
     # Constructor function
     def __init__(self, filename: Optional[Path | str] = None, loglevel="WARNING"):
         super(MainWindow, self).__init__()
-        self.pixmappath = os.path.abspath(os.path.dirname(__file__)) + '/pixmaps/'
         self.loglevels = ["Critical", "Error", "Warning", "Info", "Debug", "Notset"]
         self.editor = MolEditWidget()
         self.substructure_selector = SubstructureSelectorDialog(filename=filename)
@@ -22,6 +21,10 @@ class MainWindow(QtWidgets.QMainWindow):
         # TODO: selectionChanges ainda não existe
         # self.substructure_selector.selectionChanged.connect(self.setAtomTypeName)
         self.editor.logger.setLevel(loglevel)
+
+    def get_pixmap(self, name: str) -> str:
+        p = Path(__file__).parent / 'pixmaps' / name
+        return QtGui.QPixmap(p)
 
     #Properties
     @property
@@ -35,9 +38,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setWindowTitle(str(filename))
 
     def initGUI(self):
-        self.setWindowTitle("maligner - An Open-Source Molecular Alignment Tool")
-        self.setWindowIcon(QtGui.QIcon(self.pixmappath + 'appicon.svg.png'))
-        self.setGeometry(100, 100, 200, 150)
+        self.setWindowTitle(r"maligner |\ An Open-Source Molecular Alignment Tool")
+        self.setWindowIcon(QtGui.QIcon(self.get_pixmap("appicon.svg.png")))
+        self.setGeometry(400, 400, 200, 150)
 
         # self.center = self.editor
         # self.center.setFixedSize(600, 600)
@@ -175,6 +178,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.editor.setAtomType(str(atomname))
         self.myStatusBar.showMessage("Atomtype %s selected" % atomname)
 
+    # TODO: set_anchor ainda não existe
     def set_anchor(self):
         raise NotImplementedError("")
 
@@ -187,28 +191,28 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to create actions for menus and toolbars
     def CreateActions(self):
-        self.openAction = QtGui.QAction(QtGui.QIcon(self.pixmappath + 'open.png'),
+        self.openAction = QtGui.QAction(QtGui.QIcon(self.get_pixmap("open.png")),
                                         'O&pen',
                                         self,
                                         shortcut=QtGui.QKeySequence.Open,
                                         statusTip="Open an existing file",
                                         triggered=self.openFile)
 
-        self.saveAction = QtGui.QAction(QtGui.QIcon(self.pixmappath + '/icons8-Save.png'),
+        self.saveAction = QtGui.QAction(QtGui.QIcon(self.get_pixmap("icons8-Save.png")),
                                         'S&ave',
                                         self,
                                         shortcut=QtGui.QKeySequence.Save,
                                         statusTip="Save file",
                                         triggered=self.saveFile)
 
-        self.exitAction = QtGui.QAction(QtGui.QIcon(self.pixmappath + 'icons8-Shutdown.png'),
+        self.exitAction = QtGui.QAction(QtGui.QIcon(self.get_pixmap("icons8-Shutdown.png")),
                                         'E&xit',
                                         self,
                                         shortcut="Ctrl+Q",
                                         statusTip="Exit the Application",
                                         triggered=self.exitFile)
 
-        self.aboutAction = QtGui.QAction(QtGui.QIcon(self.pixmappath + 'about.png'),
+        self.aboutAction = QtGui.QAction(QtGui.QIcon(self.get_pixmap("about.png")),
                                          'A&bout',
                                          self,
                                          statusTip="Displays info about text editor",
@@ -221,7 +225,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         #Misc Actions
         self.deleteMoleculeAction = QtGui.QAction(
-            QtGui.QIcon(self.pixmappath + 'icons8-Trash.png'),
+            QtGui.QIcon(self.get_pixmap("icons8-Trash.png")),
             'Delete &X',
             self,
             shortcut="Ctrl+X",
@@ -230,7 +234,7 @@ class MainWindow(QtWidgets.QMainWindow):
             objectName="Clear Canvas")
 
         self.anchorAction = QtGui.QAction(
-            QtGui.QIcon(self.pixmappath + 'icons8-Anchor.png'),
+            QtGui.QIcon(self.get_pixmap('icons8-Anchor.png')),
             'Anchor current molecule &A',
             self,
             shortcut="A",
@@ -239,7 +243,7 @@ class MainWindow(QtWidgets.QMainWindow):
             objectName="Set Anchor")
 
         self.openSelectorAction = QtGui.QAction(
-            QtGui.QIcon(self.pixmappath + 'icons8-Molecule.png'),
+            QtGui.QIcon(self.get_pixmap('icons8-Molecule.png')),
             'Open Selector',
             self,
             shortcut="S",

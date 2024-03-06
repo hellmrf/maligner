@@ -7,21 +7,22 @@ from rdkit import Chem
 
 from maligner.widgets.molEditWidget import MolEditWidget
 
+
 class SubstructureSelectorWindow(QtWidgets.QMainWindow):
     # Constructor function
     def __init__(self, filename: Optional[Path | str], loglevel="WARNING"):
         super(SubstructureSelectorWindow, self).__init__()
-        self.pixmappath = os.path.abspath(
-            os.path.dirname(__file__)) + '/pixmaps/'
-        self.loglevels = [
-            "Critical", "Error", "Warning", "Info", "Debug", "Notset"
-        ]
+        self.loglevels = ["Critical", "Error", "Warning", "Info", "Debug", "Notset"]
         self.editor = MolEditWidget()
         self._filename = filename
         self.initGUI(filename=filename)
         # TODO: conectar signal selectionChanged
         # self.editor.selectionChanged.connect(self.setAtomTypeName)
         self.editor.logger.setLevel(loglevel)
+
+    def get_pixmap(self, name: str) -> str:
+        p = Path(__file__).parent.parent / 'pixmaps' / name
+        return QtGui.QPixmap(p)
 
     #Properties
     @property
@@ -36,7 +37,7 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
 
     def initGUI(self, filename=None):
         self.setWindowTitle("Substructure selector")
-        self.setWindowIcon(QtGui.QIcon(self.pixmappath + 'icons8-Cursor.png'))
+        self.setWindowIcon(QtGui.QIcon(self.get_pixmap('icons8-Cursor.png')))
         self.setGeometry(100, 100, 200, 150)
 
         self.center = self.editor
@@ -75,9 +76,7 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
 
     def loadMolFile(self, filename):
         self.fileName = filename
-        mol = Chem.MolFromMolFile(str(self.fileName),
-                                  sanitize=False,
-                                  strictParsing=False)
+        mol = Chem.MolFromMolFile(str(self.fileName), sanitize=False, strictParsing=False)
         self.editor.mol = mol
         self.statusBar().showMessage("File opened")
 
@@ -93,8 +92,8 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
             self.saveAsFile()
 
     def saveAsFile(self):
-        self.fileName, self.filterName = QtWidgets.QFileDialog.getSaveFileName(
-            self, filter=self.filters)
+        self.fileName, self.filterName = QtWidgets.QFileDialog.getSaveFileName(self,
+                                                                               filter=self.filters)
         if (self.fileName != ''):
             if self.fileName[-4:].upper() != ".MOL":
                 self.fileName = self.fileName + ".mol"
@@ -118,8 +117,8 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
 
     # Function to show Diaglog box with provided Title and Message
     def msgApp(self, title, msg):
-        userInfo = QtWidgets.QMessageBox.question(self, title, msg,
-                                        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        userInfo = QtWidgets.QMessageBox.question(
+            self, title, msg, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         if userInfo == QtWidgets.QMessageBox.Yes:
             return "Y"
         if userInfo == QtWidgets.QMessageBox.No:
@@ -135,20 +134,17 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
     def setAction(self):
         sender = self.sender()
         self.editor.setAction(sender.objectName())
-        self.myStatusBar.showMessage("Action %s selected" %
-                                     sender.objectName())
+        self.myStatusBar.showMessage("Action %s selected" % sender.objectName())
 
     def setBondType(self):
         sender = self.sender()
         self.editor.setBondType(sender.objectName())
-        self.myStatusBar.showMessage("Bondtype %s selected" %
-                                     sender.objectName())
+        self.myStatusBar.showMessage("Bondtype %s selected" % sender.objectName())
 
     def setAtomType(self):
         sender = self.sender()
         self.editor.setAtomType(sender.objectName())
-        self.myStatusBar.showMessage("Atomtype %s selected" %
-                                     sender.objectName())
+        self.myStatusBar.showMessage("Atomtype %s selected" % sender.objectName())
 
     def setAtomTypeName(self, atomname):
         self.editor.setAtomType(str(atomname))
@@ -160,35 +156,32 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
 
     # Function to create actions for menus and toolbars
     def CreateActions(self):
-        self.exitAction = QtGui.QAction(QtGui.QIcon(self.pixmappath +
-                                    'icons8-Shutdown.png'),
-                                'E&xit',
-                                self,
-                                shortcut="Ctrl+Q",
-                                statusTip="Exit the Application",
-                                triggered=self.exitFile)
+        self.exitAction = QtGui.QAction(QtGui.QIcon(self.get_pixmap('icons8-Shutdown.png')),
+                                        'E&xit',
+                                        self,
+                                        shortcut="Ctrl+Q",
+                                        statusTip="Exit the Application",
+                                        triggered=self.exitFile)
 
         #Misc Actions
-        self.undoAction = QtGui.QAction(
-            QtGui.QIcon(self.pixmappath + 'prev.png'),
-            'U&ndo',
-            self,
-            shortcut="Ctrl+Z",
-            statusTip="Undo/Redo changes to molecule Ctrl+Z",
-            triggered=self.editor.undo,
-            objectName="undo")
+        self.undoAction = QtGui.QAction(QtGui.QIcon(self.get_pixmap('prev.png')),
+                                        'U&ndo',
+                                        self,
+                                        shortcut="Ctrl+Z",
+                                        statusTip="Undo/Redo changes to molecule Ctrl+Z",
+                                        triggered=self.editor.undo,
+                                        objectName="undo")
 
-        self.deleteMoleculeAction = QtGui.QAction(
-            QtGui.QIcon(self.pixmappath + 'icons8-Trash.png'),
-            'Delete molecule from set (Del)',
-            self,
-            shortcut="Del",
-            statusTip="Remove this molecule from set (Del)",
-            triggered=self.clearCanvas,
-            objectName="Clear Canvas")
+        self.deleteMoleculeAction = QtGui.QAction(QtGui.QIcon(self.get_pixmap('icons8-Trash.png')),
+                                                  'Delete molecule from set (Del)',
+                                                  self,
+                                                  shortcut="Del",
+                                                  statusTip="Remove this molecule from set (Del)",
+                                                  triggered=self.clearCanvas,
+                                                  objectName="Clear Canvas")
 
         self.cleanCoordinatesAction = QtGui.QAction(
-            QtGui.QIcon(self.pixmappath + 'icons8-Broom.png'),
+            QtGui.QIcon(self.get_pixmap('icons8-Broom.png')),
             'Recalculate coordinates (F9)',
             self,
             shortcut="F9",
@@ -206,7 +199,7 @@ class SubstructureSelectorDialog(QtWidgets.QDialog):
         layout.addWidget(self.ss_window)
         self.setLayout(layout)
         self.setWindowTitle("Substructure Selector")
-        self.setWindowIcon(QtGui.QIcon(self.ss_window.pixmappath + 'icons8-Cursor.png'))
+        self.setWindowIcon(QtGui.QIcon(self.ss_window.get_pixmap('icons8-Cursor.png')))
 
 
 def launch(loglevel="WARNING"):
@@ -214,11 +207,9 @@ def launch(loglevel="WARNING"):
     myApp = QtWidgets.QApplication(sys.argv)
     argv1 = Path(sys.argv[1]) if len(sys.argv) > 1 else None
     if argv1 and argv1.is_file():
-        mainWindow = SubstructureSelectorWindow(filename=argv1,
-                                                loglevel=loglevel)
+        mainWindow = SubstructureSelectorWindow(filename=argv1, loglevel=loglevel)
     else:
-        mainWindow = SubstructureSelectorWindow(filename=None,
-                                                loglevel=loglevel)
+        mainWindow = SubstructureSelectorWindow(filename=None, loglevel=loglevel)
     sys.exit(myApp.exec())
 
 
