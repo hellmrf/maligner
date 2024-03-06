@@ -11,11 +11,10 @@ license = "GPL-3.0-only"
 authors = [
     { name = "Heliton Martins Reis Filho", email = "helitonmrf@gmail.com" },
 ]
-dependencies = [
-    "numpy",
-    "PySide6",
-    "rdkit",
-]
+dependencies = ["numpy", "PySide6", "rdkit"]
+
+[project.optional-dependencies]
+dev = ["hatch", "yapf"]
 
 [project.gui-scripts]
 maligner = "maligner.mainwindow:launch"
@@ -27,9 +26,12 @@ Homepage = "https://github.com/hellmrf/maligner"
 path = "maligner/__init__.py"
 
 [tool.hatch.build.targets.sdist]
-include = [
-    "/maligner",
-]
+include = ["/maligner"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["/maligner"]
+
+[tool.yapf]
+based_on_style = "google"
+column_limit = 100
+indent_width = 4
