@@ -15,7 +15,7 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
         self.loglevels = ["Critical", "Error", "Warning", "Info", "Debug", "Notset"]
         self.editor = MolEditWidget()
         self._filename = filename
-        self.initGUI(filename=filename)
+        self.init_GUI(filename=filename)
         # TODO: conectar signal selectionChanged
         # self.editor.selectionChanged.connect(self.setAtomTypeName)
         self.editor.logger.setLevel(loglevel)
@@ -26,16 +26,16 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
 
     #Properties
     @property
-    def fileName(self):
+    def filename(self):
         return self._filename
 
-    @fileName.setter
-    def fileName(self, filename):
+    @filename.setter
+    def filename(self, filename):
         if filename != self._filename:
             self._filename = filename
             self.setWindowTitle(str(filename))
 
-    def initGUI(self, filename=None):
+    def init_GUI(self, filename=None):
         self.setWindowTitle("Substructure selector")
         self.setWindowIcon(QtGui.QIcon(self.get_pixmap('icons8-Cursor.png')))
         self.setGeometry(100, 100, 200, 150)
@@ -43,125 +43,96 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
         self.center = self.editor
         self.center.setFixedSize(600, 600)
         self.setCentralWidget(self.center)
-        self.fileName = filename
+        self.filename = filename
 
         self.filters = "MOL Files (*.mol *.mol);;Any File (*)"
-        self.SetupComponents()
+        self.setup_components()
 
         self.infobar = QtWidgets.QLabel("")
         self.myStatusBar.addPermanentWidget(self.infobar, 0)
 
-        if self.fileName is not None:
-            self.editor.logger.info("Loading model from %s" % self.fileName)
-            self.loadMolFile(filename)
+        if self.filename is not None:
+            self.editor.logger.info("Loading model from %s" % self.filename)
+            self.load_mol_file(filename)
 
         self.editor.sanitizeSignal.connect(self.infobar.setText)
         self.show()
 
     # Function to setup status bar, central widget, menu bar, tool bar
-    def SetupComponents(self):
+    def setup_components(self):
         self.myStatusBar = QtWidgets.QStatusBar()
         self.setStatusBar(self.myStatusBar)
         self.myStatusBar.showMessage('Ready', 10000)
 
-        self.CreateActions()
-        self.CreateToolBars()
+        self.create_actions()
+        self.create_tool_bars()
 
-    def CreateToolBars(self):
+    def create_tool_bars(self):
         self.mainToolBar = self.addToolBar('Main')
         #Main action bar
         self.mainToolBar.addAction(self.cleanCoordinatesAction)
         self.mainToolBar.addAction(self.undoAction)
         self.mainToolBar.addAction(self.deleteMoleculeAction)
 
-    def loadMolFile(self, filename):
-        self.fileName = filename
-        mol = Chem.MolFromMolFile(str(self.fileName), sanitize=False, strictParsing=False)
+    def load_mol_file(self, filename):
+        self.filename = filename
+        mol = Chem.MolFromMolFile(str(self.filename), sanitize=False, strictParsing=False)
         self.editor.mol = mol
         self.statusBar().showMessage("File opened")
 
     def openFile(self):
-        self.fileName, self.filterName = QtWidgets.QFileDialog.getOpenFileName(
+        self.filename, self.filterName = QtWidgets.QFileDialog.getOpenFileName(
             self, caption="Open MOL file", filter=self.filters)
-        self.loadMolFile(self.fileName)
+        self.load_mol_file(self.filename)
 
-    def saveFile(self):
-        if self.fileName != None:
-            Chem.MolToMolFile(self.editor.mol, str(self.fileName))
+    def save_file(self):
+        if self.filename != None:
+            Chem.MolToMolFile(self.editor.mol, str(self.filename))
         else:
-            self.saveAsFile()
+            self.save_as_file()
 
-    def saveAsFile(self):
-        self.fileName, self.filterName = QtWidgets.QFileDialog.getSaveFileName(self,
+    def save_as_file(self):
+        self.filename, self.filterName = QtWidgets.QFileDialog.getSaveFileName(self,
                                                                                filter=self.filters)
-        if (self.fileName != ''):
-            if self.fileName[-4:].upper() != ".MOL":
-                self.fileName = self.fileName + ".mol"
-            Chem.MolToMolFile(self.editor.mol, str(self.fileName))
+        if (self.filename != ''):
+            if self.filename[-4:].upper() != ".MOL":
+                self.filename = self.filename + ".mol"
+            Chem.MolToMolFile(self.editor.mol, str(self.filename))
             # file = open(self.fileName, 'w')
             # file.write(self.textEdit.toPlainText())
             self.statusBar().showMessage("File saved", 2000)
 
-    def clearCanvas(self):
+    def clear_canvas(self):
         self.editor.mol = None
-        self.fileName = None
-        self.exitFile()
+        self.filename = None
+        self.exit_file()
         self.statusBar().showMessage("Molecule removed from canvas", 2000)
 
     def closeEvent(self, event):
-        self.exitFile()
+        self.exit_file()
         event.ignore()
 
-    def exitFile(self):
+    def exit_file(self):
         exit(0)  #TODO, how to exit QtWidgets.QApplication from within class instance?
 
-    # Function to show Diaglog box with provided Title and Message
-    def msgApp(self, title, msg):
-        userInfo = QtWidgets.QMessageBox.question(
-            self, title, msg, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-        if userInfo == QtWidgets.QMessageBox.Yes:
-            return "Y"
-        if userInfo == QtWidgets.QMessageBox.No:
-            return "N"
-        self.close()
-
-    def aboutHelp(self):
+    def about_help(self):
         QtWidgets.QMessageBox.about(
             self, "About Simple Molecule Editor",
             """A Simple Molecule Editor where you can edit molecules\nBased on RDKit! http://www.rdkit.org/ \nSome icons from http://icons8.com\n\nSource code: https://github.com/EBjerrum/rdeditor"""
         )
 
-    def setAction(self):
-        sender = self.sender()
-        self.editor.setAction(sender.objectName())
-        self.myStatusBar.showMessage("Action %s selected" % sender.objectName())
-
-    def setBondType(self):
-        sender = self.sender()
-        self.editor.setBondType(sender.objectName())
-        self.myStatusBar.showMessage("Bondtype %s selected" % sender.objectName())
-
-    def setAtomType(self):
-        sender = self.sender()
-        self.editor.setAtomType(sender.objectName())
-        self.myStatusBar.showMessage("Atomtype %s selected" % sender.objectName())
-
-    def setAtomTypeName(self, atomname):
-        self.editor.setAtomType(str(atomname))
-        self.myStatusBar.showMessage("Atomtype %s selected" % atomname)
-
-    def setLogLevel(self):
+    def set_log_level(self):
         loglevel = self.sender().objectName().split(':')[-1].upper()
         self.editor.logger.setLevel(loglevel)
 
     # Function to create actions for menus and toolbars
-    def CreateActions(self):
+    def create_actions(self):
         self.exitAction = QtGui.QAction(QtGui.QIcon(self.get_pixmap('icons8-Shutdown.png')),
                                         'E&xit',
                                         self,
                                         shortcut="Ctrl+Q",
                                         statusTip="Exit the Application",
-                                        triggered=self.exitFile)
+                                        triggered=self.exit_file)
 
         #Misc Actions
         self.undoAction = QtGui.QAction(QtGui.QIcon(self.get_pixmap('prev.png')),
@@ -177,7 +148,7 @@ class SubstructureSelectorWindow(QtWidgets.QMainWindow):
                                                   self,
                                                   shortcut="Del",
                                                   statusTip="Remove this molecule from set (Del)",
-                                                  triggered=self.clearCanvas,
+                                                  triggered=self.clear_canvas,
                                                   objectName="Clear Canvas")
 
         self.cleanCoordinatesAction = QtGui.QAction(

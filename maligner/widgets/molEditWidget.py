@@ -45,8 +45,7 @@ class MolEditWidget(MolWidget):
 
         #Bind signals to slots
         self.finishedDrawing.connect(
-            self.update_coordlist
-        )  #When drawing finished, update coordlist of SVG atoms.
+            self.update_coordlist)  #When drawing finished, update coordlist of SVG atoms.
 
         #Init with a mol if passed at construction
         #if mol != None:
@@ -65,7 +64,7 @@ class MolEditWidget(MolWidget):
             self._action = actionname
             self.actionChanged.emit()
 
-    def setAction(self, actionname):
+    def set_action(self, actionname):
         self.action = actionname
 
     bondTypeChanged = QtCore.Signal(name="bondTypeChanged")
@@ -84,13 +83,10 @@ class MolEditWidget(MolWidget):
         if type(bondtype) == Chem.rdchem.BondType:
             self.bondtype = bondtype
         elif isinstance(bondtype, str):
-            assert bondtype in self.bondtypes.keys(
-            ), "Bondtype %s not known" % bondtype
+            assert bondtype in self.bondtypes.keys(), "Bondtype %s not known" % bondtype
             self.bondtype = self.bondtypes[bondtype]
         else:
-            self.logger.error(
-                "Bondtype must be string or rdchem.BondType, not %s" %
-                type(bondtype))
+            self.logger.error("Bondtype must be string or rdchem.BondType, not %s" % type(bondtype))
 
     atomTypeChanged = QtCore.Signal(name="atomTypeChanged")
 
@@ -115,8 +111,7 @@ class MolEditWidget(MolWidget):
             #Can we assert that its a proper number known by RDKit??
             self.atomtype = atomtype
         else:
-            self.error("Atomtype must be string or integer, not %s" %
-                       type(atomtype))
+            self.error("Atomtype must be string or integer, not %s" % type(atomtype))
 
     def SVG_to_coord(self, x_svg, y_svg):
         """Function to translate from SVG coords to atom coords using scaling calculated from atomcoords (0,0) and (1,1). Returns rdkit Point2D."""
@@ -136,10 +131,8 @@ class MolEditWidget(MolWidget):
 
     def update_coordlist(self):
         if self.mol != None:
-            self.coordlist = np.array([
-                list(self.drawer.GetDrawCoords(i))
-                for i in range(self.mol.GetNumAtoms())
-            ])
+            self.coordlist = np.array(
+                [list(self.drawer.GetDrawCoords(i)) for i in range(self.mol.GetNumAtoms())])
             self.logger.debug("Current coordlist:\n%s" % self.coordlist)
         else:
             self.coordlist = None
@@ -189,8 +182,7 @@ class MolEditWidget(MolWidget):
         #Identify Nearest atomindex
         atom_idx, atom_dist = self.get_nearest_atom(x_svg, y_svg)
         bond_idx, bond_dist = self.get_nearest_bond(x_svg, y_svg)
-        self.logger.debug("Distances to atom %0.2F, bond %0.2F" %
-                          (atom_dist, bond_dist))
+        self.logger.debug("Distances to atom %0.2F, bond %0.2F" % (atom_dist, bond_dist))
         #If not below a given threshold, then it was not clicked
         if min([atom_dist, bond_dist]) < 14.0:
             if atom_dist < bond_dist:
@@ -205,9 +197,8 @@ class MolEditWidget(MolWidget):
         if event.button() == QtCore.Qt.LeftButton:
             clicked = self.get_molobject(event)
             if type(clicked) == Chem.rdchem.Atom:
-                self.logger.debug(
-                    "You clicked atom %i, with atomic number %i" %
-                    (clicked.GetIdx(), clicked.GetAtomicNum()))
+                self.logger.debug("You clicked atom %i, with atomic number %i" %
+                                  (clicked.GetIdx(), clicked.GetAtomicNum()))
                 #Call the atom_click function
                 self.atom_click(clicked)
                 #self.add_atom(self.pen, clicked)
@@ -239,9 +230,8 @@ class MolEditWidget(MolWidget):
         elif self.action == "RStoggle":
             self.toogleRS(atom)
         else:
-            self.logger.warning(
-                "The combination of Atom click and Action %s undefined" %
-                self.action)
+            self.logger.warning("The combination of Atom click and Action %s undefined" %
+                                self.action)
 
     def bond_click(self, bond):
         if self.action == "Add":
@@ -257,9 +247,8 @@ class MolEditWidget(MolWidget):
         elif self.action == "EZtoggle":
             self.toogleEZ(bond)
         else:
-            self.logger.warning(
-                "The combination of Bond click and Action %s undefined" %
-                self.action)
+            self.logger.warning("The combination of Bond click and Action %s undefined" %
+                                self.action)
 
     def canvas_click(self, point):
         if self.action == "Add":
@@ -270,9 +259,8 @@ class MolEditWidget(MolWidget):
             if len(self.selectedAtoms) > 0:
                 self.clearAtomSelection()
         else:
-            self.logger.warning(
-                "The combination of Canvas click and Action %s undefined" %
-                self.action)
+            self.logger.warning("The combination of Canvas click and Action %s undefined" %
+                                self.action)
 
     #Atom Actions
     def add_atom_to(self, atom):
@@ -360,12 +348,8 @@ class MolEditWidget(MolWidget):
             #Figure out the atom idx's of the neigbor atoms, that are NOT the other end of the bond
             stereoatoms = []
             for bondatom in bondatoms:
-                neighboridxs = [
-                    atom.GetIdx() for atom in bondatom.GetNeighbors()
-                ]
-                neighboridx = [
-                    idx for idx in neighboridxs if idx not in bondidx
-                ][0]
+                neighboridxs = [atom.GetIdx() for atom in bondatom.GetNeighbors()]
+                neighboridx = [idx for idx in neighboridxs if idx not in bondidx][0]
                 stereoatoms.append(neighboridx)
             #Set the bondstereoatoms
             bond.SetStereoAtoms(stereoatoms[0], stereoatoms[1])
@@ -390,9 +374,8 @@ class MolEditWidget(MolWidget):
         bond.SetStereo(stereotypes[newidx])
         self.logger.debug("New stereotype set to %s" % bond.GetStereo())
         try:
-            self.logger.debug(
-                "StereoAtoms are %s and %s" % bond.GetStereoAtoms()[0],
-                bond.GetStereoAtoms()[1])
+            self.logger.debug("StereoAtoms are %s and %s" % bond.GetStereoAtoms()[0],
+                              bond.GetStereoAtoms()[1])
         except:
             self.logger.warning("StereoAtoms not defined")
         self._mol.ClearComputedProps()
@@ -406,8 +389,8 @@ class MolEditWidget(MolWidget):
         self.backupMol()
         bondtype = bond.GetBondType()
         bondtypes = [
-            Chem.rdchem.BondType.TRIPLE, Chem.rdchem.BondType.SINGLE,
-            Chem.rdchem.BondType.DOUBLE, Chem.rdchem.BondType.TRIPLE
+            Chem.rdchem.BondType.TRIPLE, Chem.rdchem.BondType.SINGLE, Chem.rdchem.BondType.DOUBLE,
+            Chem.rdchem.BondType.TRIPLE
         ]
         #Find the next type in the list based on current
         #If current is not in list? Then it selects the first and add 1 => SINGLE
