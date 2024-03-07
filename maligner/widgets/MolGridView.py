@@ -4,12 +4,11 @@
 import os
 import tempfile
 from pathlib import Path
-from typing import List, TypeAlias
+from typing import List
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from rdkit import Chem
 from rdkit.Chem import Draw
-import datamol as dm
 
 from maligner.widgets.substructure_selector import SubstructureSelectorDialog
 from maligner.mtypes import Mol, MolData

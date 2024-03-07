@@ -1,15 +1,13 @@
 from pathlib import Path
 import sys, os
 
-from typing import Optional, TypeAlias
 from PySide6 import QtGui, QtWidgets
 
-import datamol as dm
 from rdkit import Chem
 
 from maligner.widgets.molEditWidget import MolEditWidget
 from maligner.icons import icon
-from maligner.mtypes import Mol, MolData
+from maligner.mtypes import MolData
 
 
 class SubstructureSelectorDialog(QtWidgets.QDialog):

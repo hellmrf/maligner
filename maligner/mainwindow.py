@@ -1,14 +1,12 @@
-import sys, os
+import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 from rdkit import Chem
-from PySide6 import QtGui, QtWidgets, QtCore
+from PySide6 import QtGui, QtWidgets
+
 from maligner.icons import pixmap
 from maligner.widgets.MolGridView import MolGridViewWidget
-
-from maligner.widgets.molEditWidget import MolEditWidget
-from maligner.widgets.substructure_selector import SubstructureSelectorDialog
 
 
 class MainWindow(QtWidgets.QMainWindow):

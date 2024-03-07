@@ -4,7 +4,6 @@ from __future__ import print_function
 from PySide6 import QtCore, QtWidgets
 from PySide6 import QtSvgWidgets
 import sys
-from types import *
 import logging
 
 from rdkit import Chem

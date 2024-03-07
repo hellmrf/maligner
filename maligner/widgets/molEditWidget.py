@@ -1,6 +1,3 @@
-#!/usr/bin/python
-#Import required modules
-from __future__ import print_function
 from typing import Optional
 from PySide6 import QtCore, QtWidgets
 import sys
@@ -17,7 +14,6 @@ from maligner.mtypes import Mol
 debug = True
 
 
-#The Molblock editor class
 class MolEditWidget(MolWidget):
 
     def __init__(self, mol: Mol, selected_atoms: Optional[list[int]] = None, parent=None):
