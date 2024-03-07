@@ -1,12 +1,12 @@
 # Just copied from https://stackoverflow.com/a/62031429/5160230, which is an image gallery.
 # We can just adapt this for our needs.
 
+from dataclasses import dataclass
 import os
 import tempfile
 from pathlib import Path
-from typing import List, TypeAlias, TypedDict
+from typing import List, TypeAlias
 from PySide6 import QtCore, QtGui, QtWidgets
-from typing import Optional
 
 from rdkit import Chem
 from rdkit.Chem import Draw
@@ -17,11 +17,13 @@ Mol: TypeAlias = dm.Mol
 ICON_SIZE = 200
 
 
-class MolData(TypedDict):
+@dataclass
+class MolData:
     mol: Mol
     name: str
     filename: Path
     qicon: QtGui.QIcon
+    anchor: bool = False
 
 
 class StyledItemDelegate(QtWidgets.QStyledItemDelegate):
@@ -90,7 +92,7 @@ class MolGridViewWidget(QtWidgets.QWidget):
             if mol is None:
                 raise ValueError(f"Could not read mol file {file}")
             qicon = self.molecule_to_icon(mol, name)
-            moldata: MolData = {"mol": mol, "filename": Path(file), "name": name, "qicon": qicon}
+            moldata = MolData(mol, name, Path(file), qicon)
             self.molecules.append(moldata)
 
         self.populate_listwidget()
@@ -111,8 +113,8 @@ class MolGridViewWidget(QtWidgets.QWidget):
         self.listview.clear()
 
         for moldata in self.molecules:
-            it = QtWidgets.QListWidgetItem(moldata["name"])
-            it.setIcon(moldata["qicon"])
+            it = QtWidgets.QListWidgetItem(moldata.name)
+            it.setIcon(moldata.qicon)
             self.listview.addItem(it)
 
 
