@@ -4,7 +4,7 @@
 import os
 import tempfile
 from pathlib import Path
-from typing import List, TypeAlias
+from typing import List, TypeAlias, TypedDict
 from PySide6 import QtCore, QtGui, QtWidgets
 from typing import Optional
 
@@ -15,6 +15,13 @@ import datamol as dm
 Mol: TypeAlias = dm.Mol
 
 ICON_SIZE = 200
+
+
+class MolData(TypedDict):
+    mol: Mol
+    name: str
+    filename: Path
+    qicon: QtGui.QIcon
 
 
 class StyledItemDelegate(QtWidgets.QStyledItemDelegate):
@@ -34,19 +41,17 @@ class MolGridViewWidget(QtWidgets.QMainWindow):
                                                 clicked=self.on_choose_btn_clicked)
         self.choose_btn.setFixedSize(50, 50)
         self.path_le = QtWidgets.QLineEdit()
-        # self.back_btn = QtWidgets.QPushButton(self.tr("^"), clicked=self.on_back_btn_clicked)
-        # self.back_btn.setFixedSize(20, 20)
-        self.pixmap_lw = QtWidgets.QListWidget(
+        self.listview = QtWidgets.QListWidget(
             viewMode=QtWidgets.QListView.IconMode,
             iconSize=ICON_SIZE * QtCore.QSize(1, 1),
             movement=QtWidgets.QListView.Static,
             resizeMode=QtWidgets.QListView.Adjust,
         )
-        delegate = StyledItemDelegate(self.pixmap_lw)
-        self.pixmap_lw.setItemDelegate(delegate)
+        delegate = StyledItemDelegate(self.listview)
+        self.listview.setItemDelegate(delegate)
 
         self._filenames: List[str] = []
-        self.molecules: List[Mol] = []
+        self.molecules: List[MolData] = []
 
         central_widget = QtWidgets.QWidget()
         self.setCentralWidget(central_widget)
@@ -54,13 +59,9 @@ class MolGridViewWidget(QtWidgets.QMainWindow):
 
         grid_layout.addWidget(self.choose_btn, 0, 0, 2, 1)
         grid_layout.addWidget(self.path_le, 0, 1)
-        # grid_layout.addWidget(self.back_btn, 1, 1, alignment=QtCore.Qt.AlignRight)
-        grid_layout.addWidget(self.pixmap_lw, 2, 0, 1, 2)
+        grid_layout.addWidget(self.listview, 2, 0, 1, 2)
 
         self.resize(640, 480)
-
-        # self.timer_loading = QtCore.QTimer(interval=50, timeout=self.load_image)
-        # self.filenames_iterator = None
 
     @property
     def filenames(self):
@@ -81,7 +82,18 @@ class MolGridViewWidget(QtWidgets.QMainWindow):
         # TODO: we'll need to handle filetype here!
         if not self.filenames:
             return []
-        self.molecules = [Chem.MolFromMolFile(file) for file in self.filenames]
+
+        self.molecules = []
+
+        for file in self.filenames:
+            name = os.path.basename(file)
+            mol = Chem.MolFromMolFile(file)
+            if mol is None:
+                raise ValueError(f"Could not read mol file {file}")
+            qicon = self.molecule_to_icon(mol, name)
+            moldata: MolData = {"mol": mol, "filename": Path(file), "name": name, "qicon": qicon}
+            self.molecules.append(moldata)
+
         self.populate_listwidget()
         return self.molecules
 
@@ -96,21 +108,13 @@ class MolGridViewWidget(QtWidgets.QMainWindow):
         pixmap = QtGui.QPixmap.fromImage(qimg)
         return QtGui.QIcon(pixmap)
 
-    # def molecules_to_icons(self) -> List[QtGui.QIcon]:
-    #     icons = [self.molecule_to_icon(mol) for mol in self.molecules]
-    #     return icons
-
-    def render_mol_previews(self):
-        pass
-
     def populate_listwidget(self):
-        for i, mol in enumerate(self.molecules):
-            name = os.path.basename(self.filenames[i])
-            icon = self.molecule_to_icon(mol, name)
-            # smiles = dm.to_smiles(mol)
-            it = QtWidgets.QListWidgetItem(name)
-            it.setIcon(icon)
-            self.pixmap_lw.addItem(it)
+        self.listview.clear()
+
+        for moldata in self.molecules:
+            it = QtWidgets.QListWidgetItem(moldata["name"])
+            it.setIcon(moldata["qicon"])
+            self.listview.addItem(it)
 
 
 if __name__ == "__main__":
