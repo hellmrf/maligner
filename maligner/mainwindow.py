@@ -74,8 +74,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # Tools
         self.toolMenu.addAction(self.anchorAction)
         self.toolMenu.addAction(self.deleteMoleculeAction)
-        self.toolMenu.addAction(self.openSelectorAction)
         self.toolMenu.addAction(self.computeMCSAction)
+        self.toolMenu.addAction(self.runAlignmentAction)
 
         #Help menu
         self.helpMenu.addAction(self.aboutAction)
@@ -96,7 +96,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mainToolBar.addSeparator()
         self.mainToolBar.addAction(self.deleteMoleculeAction)
         self.mainToolBar.addSeparator()
-        self.mainToolBar.addAction(self.openSelectorAction)
+        self.mainToolBar.addAction(self.runAlignmentAction)
 
     def load_mol_file(self, filename):
         self.filename = filename
@@ -163,6 +163,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def compute_MCS(self):
         self.molgridview.compute_MCS()
+        self.molgridview.populate_listwidget()
+
+    def run_alignment(self):
+        self.molgridview.run_alignment()
         self.molgridview.populate_listwidget()
 
     def openSubsSelector(self):
@@ -245,6 +249,14 @@ class MainWindow(QtWidgets.QMainWindow):
             "Computes and select the Maximum Common Substructure for the loaded molecules.",
             triggered=self.compute_MCS,
             objectName="Compute MCS")
+
+        self.runAlignmentAction = QtGui.QAction(QtGui.QIcon(pixmap('icons8-Molecule.png')),
+                                                'Run Alignment',
+                                                self,
+                                                shortcut="R",
+                                                statusTip="Align all the molecules.",
+                                                triggered=self.run_alignment,
+                                                objectName="Run Alignment")
 
         self.loglevelactions = {}
         for key in self.loglevels:

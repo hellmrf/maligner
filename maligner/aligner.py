@@ -1,7 +1,8 @@
 from rdkit import Chem
 from rdkit.Chem import rdFMCS
+import datamol as dm
 
-from maligner.mtypes import Mol
+from maligner.mtypes import Mol, MolData
 
 
 def find_MCS(mols: list[Mol], flexible=False) -> Mol:
@@ -51,3 +52,41 @@ def get_MCS_atoms(mols: list[Mol], flexible=False) -> list[list[int]]:
 
     mcs_mol = find_MCS(mols, flexible)
     return [list(mol.GetSubstructMatch(mcs_mol)) for mol in mols]
+
+
+def align_and_sanitize_mols(mols: list[Mol], template: Mol) -> list[Mol]:
+    """
+    Aligns and sanitizes a list of molecules to a given template molecule.
+
+    Args:
+        mols (list[Mol]): A list of molecules to be aligned and sanitized.
+        template (Mol): The template molecule to align the other molecules to.
+
+    Returns:
+        list[Mol]: A list of aligned and sanitized molecules
+
+    """
+    template = dm.sanitize_mol(dm.fix_mol(template))
+    mols = [dm.align.template_align(mol, template=template) for mol in mols]
+    mols = [dm.fix_mol(mol) for mol in mols]
+    mols = [dm.sanitize_mol(mol) for mol in mols]
+    return mols
+
+
+def align_moldatas(moldatas: list[MolData], template: Mol) -> list[MolData]:
+    """
+    Aligns a list of MolData objects to a template molecule.
+
+    Args:
+        moldatas (list[MolData]): A list of MolData objects to be aligned.
+        template (Mol): The template molecule to align the MolData objects to.
+
+    Returns:
+        list[MolData]: The list of aligned MolData objects.
+    """
+    for moldata in moldatas:
+        moldata.mol = dm.align.template_align(mol=moldata.mol, template=template)
+        moldata.mol = dm.fix_mol(moldata.mol)
+        moldata.mol = dm.sanitize_mol(moldata.mol)
+
+    return moldatas

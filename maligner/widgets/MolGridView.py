@@ -159,6 +159,17 @@ class MolGridViewWidget(QtWidgets.QWidget):
             moldata.selected = selected_atoms[i]
             self.update_moldata_icon(moldata)
 
+    def run_alignment(self):
+        anchor_mol = next((m for m in self.molecules if m.anchor), None)
+        if anchor_mol is None:
+            QtWidgets.QMessageBox.warning(self, "No anchor molecule",
+                                          "Please select an anchor molecule for alignment.")
+            return
+
+        mcs = aligner.find_MCS([m.mol for m in self.molecules])
+        self.molecules = aligner.align_moldatas(self.molecules, mcs)
+        self.update_all_moldata_icons()
+
 
 if __name__ == "__main__":
     import sys
