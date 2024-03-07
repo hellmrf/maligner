@@ -20,7 +20,7 @@ class SubstructureSelectorDialog(QtWidgets.QDialog):
         self.setWindowTitle(f"Substructure Selector ({moldata.name})")
         self.setWindowIcon(icon('icons8-Cursor.png'))
 
-        self.editor = MolEditWidget(mol=moldata.mol)
+        self.editor = MolEditWidget(mol=moldata.mol, selected_atoms=moldata.selected)
 
         QBtn = QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
 

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 #Import required modules
 from __future__ import print_function
+from typing import Optional
 from PySide6 import QtCore, QtWidgets
 import sys
 
@@ -19,7 +20,10 @@ debug = True
 #The Molblock editor class
 class MolEditWidget(MolWidget):
 
-    def __init__(self, mol: Mol, parent=None):
+    def __init__(self, mol: Mol, selected_atoms: Optional[list[int]] = None, parent=None):
+        if selected_atoms is None:
+            selected_atoms = []
+
         #Also init the super class
         super(MolEditWidget, self).__init__(parent)
         #This sets the window to delete itself when its closed, so it doesn't keep querying the model
@@ -49,6 +53,7 @@ class MolEditWidget(MolWidget):
         #Init with a mol if passed at construction
         #if mol != None:
         self.mol = mol
+        self.selectedAtoms = selected_atoms
 
     #Getters and Setters for properties
     actionChanged = QtCore.Signal(name="actionChanged")
