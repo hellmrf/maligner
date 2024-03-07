@@ -29,12 +29,12 @@ We're using Google's [`yapf`](https://github.com/google/yapf) autoformatter toge
 Currently, the plan for the UX of the software is the following.
 
 **Main screen**:
-- The user can load molecules (in .mol, .mol2 or ??)
-- Can see a grid with all molecules and the filename
-- Can mark one molecule as anchor
-- Can go to structure selector.
-- Options menu
-- "Preview Alignment" and "Save Alignment" buttons.
+- [X] The user can load molecules (in .mol, .mol2 or ??)
+- [X] Can see a grid with all molecules and the filename
+- [X] Can mark one molecule as anchor
+- [X] Can go to structure selector.
+- [ ] Options menu
+- [ ] "Preview Alignment" and "Save Alignment" buttons.
 
 **Options menu**
 - Save action:
@@ -43,10 +43,11 @@ Currently, the plan for the UX of the software is the following.
   - *(Default)* Save in a separate directory (default: `aligned`)
 
 **Atom selector**:
-- User see the molecule and, by default, the MCS calculated.
-- Three selection buttons: Select MCS, Select All, Select None.
-- Two more buttons: Cancel, Save.
-- User can click on atoms to select/deselect.
-- Select structure by SMILES/SMARTS.
-- Maybe implement lasso tool in future.
+- [X] User see the molecule and, by default, the MCS calculated.
+- [ ] Three selection buttons: Select MCS, Select All, Select None.
+- [ ] Two more buttons: Cancel, Save.
+- [X] User can click on atoms to select/deselect.
+- [ ] Select structure by SMILES/SMARTS.
+- [ ] Maybe implement lasso tool in future.
 
+At this stage, users can load molecules, anchor one of them, and they are displayed in a grid view. The user can automatically select MCS on all molecules. The user can click twice on a molecule and it will take it to Substructure Selector, where the selected atoms can be tweaked by clicking. Now we need to implement the alignment part. I have some drafts already.
