@@ -31,7 +31,7 @@ class StyledItemDelegate(QtWidgets.QStyledItemDelegate):
         option.text = option.fontMetrics.elidedText(index.data(), QtCore.Qt.ElideRight, ICON_SIZE)
 
 
-class MolGridViewWidget(QtWidgets.QMainWindow):
+class MolGridViewWidget(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -53,9 +53,7 @@ class MolGridViewWidget(QtWidgets.QMainWindow):
         self._filenames: List[str] = []
         self.molecules: List[MolData] = []
 
-        central_widget = QtWidgets.QWidget()
-        self.setCentralWidget(central_widget)
-        grid_layout = QtWidgets.QGridLayout(central_widget)
+        grid_layout = QtWidgets.QGridLayout(self)
 
         grid_layout.addWidget(self.choose_btn, 0, 0, 2, 1)
         grid_layout.addWidget(self.path_le, 0, 1)
