@@ -11,8 +11,7 @@ from rdkit.Geometry.rdGeometry import Point2D, Point3D
 #from rdkit.Chem.AllChem import GenerateDepictionMatching3DStructure
 
 from maligner.widgets.molViewWidget import MolWidget
-
-from types import *
+from maligner.mtypes import Mol
 
 debug = True
 
@@ -20,7 +19,7 @@ debug = True
 #The Molblock editor class
 class MolEditWidget(MolWidget):
 
-    def __init__(self, mol=None, parent=None):
+    def __init__(self, mol: Mol, parent=None):
         #Also init the super class
         super(MolEditWidget, self).__init__(parent)
         #This sets the window to delete itself when its closed, so it doesn't keep querying the model

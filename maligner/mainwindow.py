@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from rdkit import Chem
 from PySide6 import QtGui, QtWidgets, QtCore
+from maligner.mtypes import MolData
 from maligner.widgets.MolGridView import MolGridViewWidget
 
 from maligner.widgets.molEditWidget import MolEditWidget
@@ -126,7 +127,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.statusBar().showMessage("File saved", 2000)
 
     def open_selector(self):
-        pass
+        citem = self.molgridview.listview.currentItem()
+        if citem is None:
+            self.statusBar().showMessage("No molecule selected", 2000)
+            return
+        self.molgridview.on_mol_double_click(citem)
 
     def clear_canvas(self):
         self.filenames = []

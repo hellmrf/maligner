@@ -1,7 +1,6 @@
 # Just copied from https://stackoverflow.com/a/62031429/5160230, which is an image gallery.
 # We can just adapt this for our needs.
 
-from dataclasses import dataclass
 import os
 import tempfile
 from pathlib import Path
@@ -12,18 +11,10 @@ from rdkit import Chem
 from rdkit.Chem import Draw
 import datamol as dm
 
-Mol: TypeAlias = dm.Mol
+from maligner.widgets.substructure_selector import SubstructureSelectorDialog
+from maligner.mtypes import Mol, MolData
 
 ICON_SIZE = 200
-
-
-@dataclass
-class MolData:
-    mol: Mol
-    name: str
-    filename: Path
-    qicon: QtGui.QIcon
-    anchor: bool = False
 
 
 class StyledItemDelegate(QtWidgets.QStyledItemDelegate):
@@ -49,6 +40,7 @@ class MolGridViewWidget(QtWidgets.QWidget):
         )
         delegate = StyledItemDelegate(self.listview)
         self.listview.setItemDelegate(delegate)
+        self.listview.itemDoubleClicked.connect(self.on_mol_double_click)
 
         self._filenames: List[str] = []
         self.molecules: List[MolData] = []
@@ -69,6 +61,12 @@ class MolGridViewWidget(QtWidgets.QWidget):
         self._filenames = filenames
         if len(self._filenames) > 0:
             print(f"{self.load_molecules() = }")
+
+    def on_mol_double_click(self, item: QtWidgets.QListWidgetItem):
+        # index = self.listview.currentRow()
+        moldata = self.moldata_from_item(item)
+        dlg = SubstructureSelectorDialog(moldata)
+        dlg.exec()
 
     def clear(self):
         self.listview.clear()
