@@ -37,10 +37,8 @@ class MolGridViewWidget(QtWidgets.QWidget):
         super().__init__(parent)
 
         self.temp_dir = Path(tempfile.gettempdir())
-        self.choose_btn = QtWidgets.QPushButton(self.tr("Choose"),
-                                                clicked=self.on_choose_btn_clicked)
-        self.choose_btn.setFixedSize(50, 50)
-        self.path_le = QtWidgets.QLineEdit()
+        # self.choose_btn = QtWidgets.QPushButton(self.tr("Choose"), clicked=self.file_chooser)
+        # self.choose_btn.setFixedSize(50, 50)
         self.listview = QtWidgets.QListWidget(
             viewMode=QtWidgets.QListView.IconMode,
             iconSize=ICON_SIZE * QtCore.QSize(1, 1),
@@ -55,11 +53,10 @@ class MolGridViewWidget(QtWidgets.QWidget):
 
         grid_layout = QtWidgets.QGridLayout(self)
 
-        grid_layout.addWidget(self.choose_btn, 0, 0, 2, 1)
-        grid_layout.addWidget(self.path_le, 0, 1)
-        grid_layout.addWidget(self.listview, 2, 0, 1, 2)
+        # grid_layout.addWidget(self.choose_btn, 0, 0)
+        grid_layout.addWidget(self.listview, 0, 0, 1, 1)
 
-        self.resize(640, 480)
+        # self.resize(640, 480)
 
     @property
     def filenames(self):
@@ -71,8 +68,12 @@ class MolGridViewWidget(QtWidgets.QWidget):
         if len(self._filenames) > 0:
             print(f"{self.load_molecules() = }")
 
-    @QtCore.Slot()
-    def on_choose_btn_clicked(self):
+    def clear(self):
+        self.listview.clear()
+        self.molecules = []
+        self._filenames = []
+
+    def file_chooser(self):
         self.filenames = QtWidgets.QFileDialog.getOpenFileNames(self, self.tr("Choose molecules"),
                                                                 "", "Molecules (*mol)")[0]
 
