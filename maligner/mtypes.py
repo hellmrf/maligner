@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TypeAlias
 from pathlib import Path
 
@@ -15,3 +15,4 @@ class MolData:
     filename: Path
     qicon: QtGui.QIcon
     anchor: bool = False
+    selected: list[int] = field(default_factory=list)

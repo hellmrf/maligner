@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from rdkit import Chem
 from PySide6 import QtGui, QtWidgets, QtCore
-from maligner.mtypes import MolData
+from maligner.icons import pixmap
 from maligner.widgets.MolGridView import MolGridViewWidget
 
 from maligner.widgets.molEditWidget import MolEditWidget
@@ -25,10 +25,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.substructure_selector.selectionChanged.connect(self.setAtomTypeName)
         # self.editor.logger.setLevel(loglevel)
 
-    def get_pixmap(self, name: str) -> QtGui.QPixmap:
-        p = Path(__file__).parent / 'pixmaps' / name
-        return QtGui.QPixmap(p)
-
     #Properties
     @property
     def filename(self):
@@ -42,7 +38,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def init_GUI(self):
         self.setWindowTitle(r"maligner |\ An Open-Source Molecular Alignment Tool")
-        self.setWindowIcon(QtGui.QIcon(self.get_pixmap("appicon.svg.png")))
+        self.setWindowIcon(QtGui.QIcon(pixmap("appicon.svg.png")))
         self.setGeometry(400, 400, 700, 500)
 
         self.setCentralWidget(self.molgridview)
@@ -81,6 +77,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.toolMenu.addAction(self.anchorAction)
         self.toolMenu.addAction(self.deleteMoleculeAction)
         self.toolMenu.addAction(self.openSelectorAction)
+        self.toolMenu.addAction(self.computeMCSAction)
 
         #Help menu
         self.helpMenu.addAction(self.aboutAction)
@@ -97,6 +94,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mainToolBar.addAction(self.saveAction)
         self.mainToolBar.addSeparator()
         self.mainToolBar.addAction(self.anchorAction)
+        self.mainToolBar.addAction(self.computeMCSAction)
         self.mainToolBar.addSeparator()
         self.mainToolBar.addAction(self.deleteMoleculeAction)
         self.mainToolBar.addSeparator()
@@ -165,6 +163,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.molgridview.set_anchor(crow)
         self.molgridview.populate_listwidget()
 
+    def compute_MCS(self):
+        self.molgridview.compute_MCS()
+        self.molgridview.populate_listwidget()
+
     def openSubsSelector(self):
         pass
         # self.substructure_selector.show()
@@ -176,28 +178,28 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to create actions for menus and toolbars
     def create_actions(self):
-        self.openAction = QtGui.QAction(QtGui.QIcon(self.get_pixmap("open.png")),
+        self.openAction = QtGui.QAction(QtGui.QIcon(pixmap("open.png")),
                                         'O&pen',
                                         self,
                                         shortcut=QtGui.QKeySequence.Open,
                                         statusTip="Open an existing file",
                                         triggered=self.open_file)
 
-        self.saveAction = QtGui.QAction(QtGui.QIcon(self.get_pixmap("icons8-Save.png")),
+        self.saveAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Save.png")),
                                         'S&ave',
                                         self,
                                         shortcut=QtGui.QKeySequence.Save,
                                         statusTip="Save file",
                                         triggered=self.saveFile)
 
-        self.exitAction = QtGui.QAction(QtGui.QIcon(self.get_pixmap("icons8-Shutdown.png")),
+        self.exitAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Shutdown.png")),
                                         'E&xit',
                                         self,
                                         shortcut="Ctrl+Q",
                                         statusTip="Exit the Application",
                                         triggered=self.exit_file)
 
-        self.aboutAction = QtGui.QAction(QtGui.QIcon(self.get_pixmap("about.png")),
+        self.aboutAction = QtGui.QAction(QtGui.QIcon(pixmap("about.png")),
                                          'A&bout',
                                          self,
                                          statusTip="Displays info about text editor",
@@ -210,7 +212,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         #Misc Actions
         self.deleteMoleculeAction = QtGui.QAction(
-            QtGui.QIcon(self.get_pixmap("icons8-Trash.png")),
+            QtGui.QIcon(pixmap("icons8-Trash.png")),
             'Delete &X',
             self,
             shortcut="Ctrl+X",
@@ -219,7 +221,7 @@ class MainWindow(QtWidgets.QMainWindow):
             objectName="Clear Canvas")
 
         self.anchorAction = QtGui.QAction(
-            QtGui.QIcon(self.get_pixmap('icons8-Anchor.png')),
+            QtGui.QIcon(pixmap('icons8-Anchor.png')),
             'Anchor current molecule &A',
             self,
             shortcut="A",
@@ -228,13 +230,23 @@ class MainWindow(QtWidgets.QMainWindow):
             objectName="Set Anchor")
 
         self.openSelectorAction = QtGui.QAction(
-            QtGui.QIcon(self.get_pixmap('icons8-Molecule.png')),
+            QtGui.QIcon(pixmap('icons8-Molecule.png')),
             'Open Selector',
             self,
             shortcut="S",
             statusTip="Opens the molecule selector for some molecule",
             triggered=self.open_selector,
             objectName="Open selector")
+
+        self.computeMCSAction = QtGui.QAction(
+            QtGui.QIcon(pixmap('MCS.png')),
+            'Compute MCS',
+            self,
+            shortcut="S",
+            statusTip=
+            "Computes and select the Maximum Common Substructure for the loaded molecules.",
+            triggered=self.compute_MCS,
+            objectName="Compute MCS")
 
         self.loglevelactions = {}
         for key in self.loglevels:

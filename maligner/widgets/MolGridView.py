@@ -13,6 +13,7 @@ import datamol as dm
 
 from maligner.widgets.substructure_selector import SubstructureSelectorDialog
 from maligner.mtypes import Mol, MolData
+from maligner import aligner
 
 ICON_SIZE = 200
 
@@ -105,6 +106,21 @@ class MolGridViewWidget(QtWidgets.QWidget):
         self.populate_listwidget()
         return self.molecules
 
+    def update_all_moldata_icons(self):
+        for moldata in self.molecules:
+            self.update_moldata_icon(moldata)
+
+    def update_moldata_icon(self, moldata: MolData) -> None:
+        img_file = self.temp_dir / f"{moldata.name}.png"
+
+        Draw.MolToImageFile(moldata.mol,
+                            filename=img_file,
+                            size=(ICON_SIZE, ICON_SIZE),
+                            highlightAtoms=moldata.selected)
+        qimg = QtGui.QImage(img_file)
+        pixmap = QtGui.QPixmap.fromImage(qimg)
+        moldata.qicon = QtGui.QIcon(pixmap)
+
     def molecule_to_icon(self, mol: Mol, name: str) -> QtGui.QIcon:
         if not name.endswith(".mol"):
             name += ".mol"
@@ -128,6 +144,12 @@ class MolGridViewWidget(QtWidgets.QWidget):
             it = QtWidgets.QListWidgetItem(name)
             it.setIcon(moldata.qicon)
             self.listview.addItem(it)
+
+    def compute_MCS(self):
+        selected_atoms = aligner.get_MCS_atoms([m.mol for m in self.molecules])
+        for i, moldata in enumerate(self.molecules):
+            moldata.selected = selected_atoms[i]
+            self.update_moldata_icon(moldata)
 
 
 if __name__ == "__main__":
