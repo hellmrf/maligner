@@ -12,7 +12,7 @@ from maligner.widgets.substructure_selector import SubstructureSelectorDialog
 
 class MainWindow(QtWidgets.QMainWindow):
     # Constructor function
-    def __init__(self, filenames: Optional[List[Path | str]] = None, loglevel="WARNING"):
+    def __init__(self, filenames: Optional[list[Path | str]] = None):
         super(MainWindow, self).__init__()
         self.loglevels = ["Critical", "Error", "Warning", "Info", "Debug", "Notset"]
         # self.editor = MolEditWidget()
@@ -150,9 +150,15 @@ class MainWindow(QtWidgets.QMainWindow):
             """maligner is an Open-Source Molecular Alignment Tool.\n\n\nBased on RDKit: http://www.rdkit.org/\nBased on rdeditor: https://github.com/EBjerrum/rdeditor\nSome icons from: http://icons8.com\nSource code: https://github.com/hellmrf/maligner\n\nReleased under GPL-v3.0."""
         )
 
-    # TODO: set_anchor ainda não existe
     def set_anchor(self):
-        raise NotImplementedError("")
+        item = self.molgridview.listview.currentItem()
+        if item is None:
+            self.statusBar().showMessage("No molecule selected", 2000)
+            return
+
+        crow = self.molgridview.listview.currentRow()
+        self.molgridview.set_anchor(crow)
+        self.molgridview.populate_listwidget()
 
     def openSubsSelector(self):
         pass

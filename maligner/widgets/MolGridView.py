@@ -79,6 +79,15 @@ class MolGridViewWidget(QtWidgets.QWidget):
         self.filenames = QtWidgets.QFileDialog.getOpenFileNames(self, self.tr("Choose molecules"),
                                                                 "", "Molecules (*mol)")[0]
 
+    def set_anchor(self, index: int):
+        moldata = self.molecules[index]
+        old_anchor = moldata.anchor
+
+        for m in self.molecules:
+            m.anchor = False
+
+        moldata.anchor = not old_anchor
+
     def load_molecules(self) -> List[Mol]:
         # TODO: we'll need to handle filetype here!
         if not self.filenames:
@@ -109,11 +118,16 @@ class MolGridViewWidget(QtWidgets.QWidget):
         pixmap = QtGui.QPixmap.fromImage(qimg)
         return QtGui.QIcon(pixmap)
 
+    def moldata_from_item(self, item: QtWidgets.QListWidgetItem) -> MolData:
+        index = self.listview.indexFromItem(item).row()
+        return self.molecules[index]
+
     def populate_listwidget(self):
         self.listview.clear()
 
         for moldata in self.molecules:
-            it = QtWidgets.QListWidgetItem(moldata.name)
+            name = f"⚓ {moldata.name}" if moldata.anchor else moldata.name
+            it = QtWidgets.QListWidgetItem(name)
             it.setIcon(moldata.qicon)
             self.listview.addItem(it)
 
