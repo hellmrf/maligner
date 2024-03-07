@@ -73,25 +73,25 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
         self.mol = mol
 
     #Handling of selections
-    selectionChanged = QtCore.Signal(name="selectionChanged")
+    selectionChanged = QtCore.Signal(list, name="selectionChanged", arguments=['selectedAtoms'])
 
     def selectAtomAdd(self, atomidx):
         if not atomidx in self._selectedAtoms:
             self._selectedAtoms.append(atomidx)
-            self.selectionChanged.emit()
+            self.selectionChanged.emit(self.selectedAtoms)
 
     def selectAtom(self, atomidx):
         self._selectedAtoms = [atomidx]
-        self.selectionChanged.emit()
+        self.selectionChanged.emit(self.selectedAtoms)
 
     def unselectAtom(self, atomidx):
         self.selectedAtoms.remove(atomidx)
-        self.selectionChanged.emit()
+        self.selectionChanged.emit(self.selectedAtoms)
 
     def clearAtomSelection(self):
         if self._selectedAtoms != []:
             self._selectedAtoms = []
-            self.selectionChanged.emit()
+            self.selectionChanged.emit(self.selectedAtoms)
 
     @property
     def selectedAtoms(self):
@@ -104,7 +104,7 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
             assert all(isinstance(item, int)
                        for item in atomlist), "selectedAtoms should be a list of integers"
             self._selectedAtoms = atomlist
-            self.selectionChanged.emit()
+            self.selectionChanged.emit(self.selectedAtoms)
 
     def setSelectedAtoms(self, atomlist):
         self.selectedAtoms = atomlist

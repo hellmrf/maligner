@@ -63,10 +63,19 @@ class MolGridViewWidget(QtWidgets.QWidget):
         if len(self._filenames) > 0:
             print(f"{self.load_molecules() = }")
 
+    def on_mol_selection_changed(self, moldata: MolData, selected_atoms: list[int]):
+        for moldatas in self.molecules:
+            if moldatas == moldata:
+                moldatas.selected = selected_atoms
+                self.update_moldata_icon(moldatas)
+                break
+        self.populate_listwidget()
+
     def on_mol_double_click(self, item: QtWidgets.QListWidgetItem):
         # index = self.listview.currentRow()
         moldata = self.moldata_from_item(item)
         dlg = SubstructureSelectorDialog(moldata)
+        dlg.editor.selectionChanged.connect(lambda x: self.on_mol_selection_changed(moldata, x))
         dlg.exec()
 
     def clear(self):
