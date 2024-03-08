@@ -11,7 +11,7 @@ license = "GPL-3.0-only"
 authors = [
     { name = "Heliton Martins Reis Filho", email = "helitonmrf@gmail.com" },
 ]
-dependencies = ["numpy", "PySide6", "rdkit"]
+dependencies = ["numpy", "PySide6", "rdkit", "datamol"]
 
 [project.optional-dependencies]
 dev = ["hatch", "yapf"]
