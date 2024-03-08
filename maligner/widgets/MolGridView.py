@@ -30,8 +30,6 @@ class MolGridViewWidget(QtWidgets.QWidget):
         super().__init__(parent)
 
         self.temp_dir = Path(tempfile.gettempdir())
-        # self.choose_btn = QtWidgets.QPushButton(self.tr("Choose"), clicked=self.file_chooser)
-        # self.choose_btn.setFixedSize(50, 50)
         self.listview = QtWidgets.QListWidget(
             viewMode=QtWidgets.QListView.IconMode,
             iconSize=ICON_SIZE * QtCore.QSize(1, 1),
@@ -47,10 +45,7 @@ class MolGridViewWidget(QtWidgets.QWidget):
 
         grid_layout = QtWidgets.QGridLayout(self)
 
-        # grid_layout.addWidget(self.choose_btn, 0, 0)
         grid_layout.addWidget(self.listview, 0, 0, 1, 1)
-
-        # self.resize(640, 480)
 
     @property
     def filenames(self):
@@ -70,8 +65,8 @@ class MolGridViewWidget(QtWidgets.QWidget):
                 break
         self.populate_listwidget()
 
+    @QtCore.Slot(QtWidgets.QListWidgetItem)
     def on_mol_double_click(self, item: QtWidgets.QListWidgetItem):
-        # index = self.listview.currentRow()
         moldata = self.moldata_from_item(item)
         dlg = SubstructureSelectorDialog(moldata)
         dlg.editor.selectionChanged.connect(lambda x: self.on_mol_selection_changed(moldata, x))
@@ -95,7 +90,13 @@ class MolGridViewWidget(QtWidgets.QWidget):
 
         moldata.anchor = not old_anchor
 
-    def load_molecules(self) -> List[Mol]:
+    def load_molecules(self) -> List[MolData]:
+        """ Loads molecules from the specified filenames and returns a list of MolData objects.
+                self.molecules will be updated with the loaded molecules.
+
+            Returns:
+                List[MolData]: A list of MolData objects representing the loaded molecules (self.molecules).
+        """
         # TODO: we'll need to handle filetype here!
         if not self.filenames:
             return []
@@ -130,6 +131,17 @@ class MolGridViewWidget(QtWidgets.QWidget):
         moldata.qicon = QtGui.QIcon(pixmap)
 
     def molecule_to_icon(self, mol: Mol, name: str) -> QtGui.QIcon:
+        """
+        Converts a molecule (Mol object) to a QIcon object throw PNG representation saved to the temp_dir.
+
+        Args:
+            mol (rdkit.Chem.rdchem.Mol): The molecule to convert.
+            name (str): The name of the molecule.
+
+        Returns:
+            QtGui.QIcon: The QIcon object representing the molecule.
+
+        """
         if not name.endswith(".mol"):
             name += ".mol"
 
@@ -141,10 +153,28 @@ class MolGridViewWidget(QtWidgets.QWidget):
         return QtGui.QIcon(pixmap)
 
     def moldata_from_item(self, item: QtWidgets.QListWidgetItem) -> MolData:
+        """
+        Retrieves the MolData object associated with the given QListWidgetItem.
+
+        Args:
+            item (QtWidgets.QListWidgetItem): The QListWidgetItem object representing a molecule.
+
+        Returns:
+            MolData: The MolData object associated with the given QListWidgetItem.
+        """
         index = self.listview.indexFromItem(item).row()
         return self.molecules[index]
 
     def populate_listwidget(self):
+        """
+        Populates the list widget with molecules.
+
+        This method clears the list widget and then adds each molecule
+        from the `molecules` list to the list widget. Each molecule is
+        represented by a QListWidgetItem with its name and icon.
+
+        If a molecule is an anchor, its name is prefixed with a ⚓ symbol.
+        """
         self.listview.clear()
 
         for moldata in self.molecules:
@@ -154,6 +184,13 @@ class MolGridViewWidget(QtWidgets.QWidget):
             self.listview.addItem(it)
 
     def compute_MCS(self):
+        """
+        Computes the Maximum Common Substructure (MCS) for the molecules in the grid view.
+
+        This method uses `maligner.aligner` to calculate the MCS atoms for each molecule in the grid view.
+        The selected atoms are then assigned to the corresponding molecule's `selected` attribute.
+        Finally, the molecule icons are updated to reflect the selected atoms.
+        """
         selected_atoms = aligner.get_MCS_atoms([m.mol for m in self.molecules])
         for i, moldata in enumerate(self.molecules):
             moldata.selected = selected_atoms[i]
