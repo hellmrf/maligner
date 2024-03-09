@@ -1,0 +1,1 @@
+These molecules are `any*.mol` from `../`, but they were rotated, were included arbitrary heteroatoms to the chain, and they were "3D-optimized" by ACDLabs/ChemSketch.
