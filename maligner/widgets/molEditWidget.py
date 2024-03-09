@@ -1,17 +1,16 @@
-from typing import Optional
-from PySide6 import QtCore, QtWidgets
 import sys
+from typing import Optional
 
 import numpy as np
+from PySide6 import QtCore, QtWidgets
 from rdkit import Chem
 from rdkit.Chem import rdDepictor
-from rdkit.Geometry.rdGeometry import Point2D, Point3D
-#from rdkit.Chem.AllChem import GenerateDepictionMatching3DStructure
+from rdkit.Geometry.rdGeometry import Point2D
 
-from maligner.widgets.molViewWidget import MolWidget
 from maligner.mtypes import Mol
+from maligner.widgets.molViewWidget import MolWidget
 
-debug = True
+# from rdkit.Chem.AllChem import GenerateDepictionMatching3DStructure
 
 
 class MolEditWidget(MolWidget):

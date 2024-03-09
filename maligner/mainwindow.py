@@ -2,15 +2,14 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from rdkit import Chem
-from PySide6 import QtGui, QtWidgets, QtCore
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from maligner.icons import pixmap
 from maligner.widgets.MolGridView import MolGridViewWidget
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    # Constructor function
+
     def __init__(self, filenames: Optional[list[Path | str]] = None):
         super(MainWindow, self).__init__()
         self.loglevels = ["Critical", "Error", "Warning", "Info", "Debug", "Notset"]
@@ -21,7 +20,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def tr(self, text: str) -> str:
         return QtCore.QCoreApplication.translate("MainWindow", text)
 
-    #Properties
     @property
     def filename(self):
         return self._filename
@@ -47,45 +45,38 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.show()
 
-    # Function to setup status bar, central widget, menu bar, tool bar
     def setup_components(self):
         self.myStatusBar = QtWidgets.QStatusBar()
         self.setStatusBar(self.myStatusBar)
-        self.myStatusBar.showMessage('Ready', 10000)
+        self.myStatusBar.showMessage("Ready", 10000)
 
         self.create_actions()
         self.create_menus()
         self.create_tool_bars()
 
-    # Actual menu bar item creation
     def create_menus(self):
-        self.fileMenu = self.menuBar().addMenu(self.tr("File"))
-        self.toolMenu = self.menuBar().addMenu(self.tr("Tools"))
-        self.helpMenu = self.menuBar().addMenu(self.tr("Help"))
 
         # File
+        self.fileMenu = self.menuBar().addMenu(self.tr("File"))
         self.fileMenu.addAction(self.openAction)
         self.fileMenu.addAction(self.saveAction)
         self.fileMenu.addSeparator()
         self.fileMenu.addAction(self.exitAction)
 
         # Tools
+        self.toolMenu = self.menuBar().addMenu(self.tr("Tools"))
         self.toolMenu.addAction(self.anchorAction)
         self.toolMenu.addAction(self.deleteMoleculeAction)
         self.toolMenu.addAction(self.computeMCSAction)
         self.toolMenu.addAction(self.runAlignmentAction)
 
-        #Help menu
+        # Help menu
+        self.helpMenu = self.menuBar().addMenu(self.tr("Help"))
         self.helpMenu.addAction(self.aboutAction)
         self.helpMenu.addAction(self.aboutQtAction)
-        #Debug level sub menu
-        # self.loglevelMenu = self.helpMenu.addMenu("Logging Level")
-        # for loglevel in self.loglevels:
-        #     self.loglevelMenu.addAction(self.loglevelactions[loglevel])
 
     def create_tool_bars(self):
-        self.mainToolBar = self.addToolBar('Main')
-        #Main action bar
+        self.mainToolBar = self.addToolBar("Main")
         self.mainToolBar.addAction(self.openAction)
         self.mainToolBar.addAction(self.saveAction)
         self.mainToolBar.addSeparator()
@@ -95,11 +86,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mainToolBar.addAction(self.deleteMoleculeAction)
         self.mainToolBar.addSeparator()
         self.mainToolBar.addAction(self.runAlignmentAction)
-
-    def load_mol_file(self, filename):
-        self.filename = filename
-        mol = Chem.MolFromMolFile(str(self.filename), sanitize=False, strictParsing=False)
-        self.statusBar().showMessage(self.tr("File opened"))
 
     def open_file(self):
         self.molgridview.file_chooser()
@@ -118,22 +104,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.exit_file()
         self.statusBar().showMessage(self.tr("Molecules removed"), 2000)
 
-    def closeEvent(self, event):
-        self.molgridview.clear()
-        self.exit_file()
-        event.ignore()
-
     def exit_file(self):
-
-        # self.substructure_selector.close()
-        exit(0)  #TODO, how to exit QtWidgets.QApplication from within class instance?
+        exit(0)
 
     def about_help(self):
         QtWidgets.QMessageBox.about(
-            self, self.tr("About maligner"),
+            self,
+            self.tr("About maligner"),
             self.
             tr("""maligner is an Open-Source Molecular Alignment Tool.\n\n\nBased on RDKit: http://www.rdkit.org/\nBased on rdeditor: https://github.com/EBjerrum/rdeditor\nSome icons from: http://icons8.com\nSource code: https://github.com/hellmrf/maligner\n\nReleased under GPL-v3.0."""
-              ))
+              ),
+        )
 
     def set_anchor(self):
         item = self.molgridview.listview.currentItem()
@@ -153,34 +134,24 @@ class MainWindow(QtWidgets.QMainWindow):
         self.molgridview.run_alignment()
         self.molgridview.populate_listwidget()
 
-    def openSubsSelector(self):
-        pass
-        # self.substructure_selector.show()
-
-    def set_log_level(self):
-        pass
-        # loglevel = self.sender().objectName().split(':')[-1].upper()
-        # self.editor.logger.setLevel(loglevel)
-
-    # Function to create actions for menus and toolbars
     def create_actions(self):
-        self.openAction = QtGui.QAction(QtGui.QIcon(pixmap("open.png")), self.tr('Open'), self)
+        self.openAction = QtGui.QAction(QtGui.QIcon(pixmap("open.png")), self.tr("Open"), self)
         self.openAction.setShortcut(QtGui.QKeySequence.StandardKey.Open)
         self.openAction.setStatusTip(self.tr("Open an existing file"))
         self.openAction.triggered.connect(self.open_file)
 
-        self.saveAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Save.png")), self.tr('Save'),
+        self.saveAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Save.png")), self.tr("Save"),
                                         self)
         self.saveAction.setShortcut(QtGui.QKeySequence.StandardKey.Save)
         self.saveAction.setStatusTip(self.tr("Save file"))
         # self.saveAction.triggered.connect()
 
-        self.exitAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Shutdown.png")), self.tr('Exit'),
+        self.exitAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Shutdown.png")), self.tr("Exit"),
                                         self)
         self.exitAction.setStatusTip(self.tr("Exit the Application"))
         self.exitAction.triggered.connect(self.exit_file)
 
-        self.aboutAction = QtGui.QAction(QtGui.QIcon(pixmap("about.png")), self.tr('About'), self)
+        self.aboutAction = QtGui.QAction(QtGui.QIcon(pixmap("about.png")), self.tr("About"), self)
         self.aboutAction.setStatusTip(self.tr("Displays info about maligner"))
         self.aboutAction.triggered.connect(self.about_help)
 
@@ -188,47 +159,49 @@ class MainWindow(QtWidgets.QMainWindow):
         self.aboutQtAction.setStatusTip(self.tr("Show the Qt library's About box"))
         self.aboutQtAction.triggered.connect(QtWidgets.QApplication.aboutQt)
 
-        #Misc Actions
         self.deleteMoleculeAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Trash.png")),
-                                                  self.tr('Delete'), self)
+                                                  self.tr("Delete"), self)
         self.deleteMoleculeAction.setShortcut(QtGui.QKeySequence.StandardKey.Delete)
         self.deleteMoleculeAction.setStatusTip(self.tr("Remove this molecule from canvas"))
         self.deleteMoleculeAction.triggered.connect(self.clear_canvas)
 
-        self.anchorAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Anchor.png")),
-                                          self.tr('Anchor current molecule'), self)
+        self.anchorAction = QtGui.QAction(
+            QtGui.QIcon(pixmap("icons8-Anchor.png")),
+            self.tr("Anchor current molecule"),
+            self,
+        )
         self.anchorAction.setShortcut("A")
         self.anchorAction.setStatusTip(
             self.tr("Set the selected molecule as the anchor for the alignment. (A)"))
         self.anchorAction.triggered.connect(self.set_anchor)
 
-        self.openSelectorAction = QtGui.QAction(QtGui.QIcon(pixmap('icons8-Molecule.png')),
-                                                'Open Selector', self)
+        self.openSelectorAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Molecule.png")),
+                                                "Open Selector", self)
         self.openSelectorAction.triggered.connect(self.open_selector)
         self.openSelectorAction.setStatusTip("Opens the molecule selector for some molecule")
 
-        self.computeMCSAction = QtGui.QAction(QtGui.QIcon(pixmap('MCS.png')),
-                                              self.tr('Compute MCS'), self)
+        self.computeMCSAction = QtGui.QAction(QtGui.QIcon(pixmap("MCS.png")),
+                                              self.tr("Compute MCS"), self)
         self.computeMCSAction.setShortcut("S")
         self.computeMCSAction.setStatusTip(
             self.tr(
                 "Computes and select the Maximum Common Substructure for the loaded molecules."))
         self.computeMCSAction.triggered.connect(self.compute_MCS)
 
-        self.runAlignmentAction = QtGui.QAction(QtGui.QIcon(pixmap('icons8-Molecule.png')),
-                                                self.tr('Run Alignment'), self)
+        self.runAlignmentAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Molecule.png")),
+                                                self.tr("Run Alignment"), self)
         self.runAlignmentAction.setShortcut("R")
         self.runAlignmentAction.setStatusTip(self.tr("Align all the molecules."))
         self.runAlignmentAction.triggered.connect(self.run_alignment)
 
 
 def launch():
-    "Function that launches the mainWindow Application"
+    """Function that launches the mainWindow Application"""
     app = QtWidgets.QApplication(sys.argv)
 
-    path = str(Path(__file__).parent / 'translations')
+    path = str(Path(__file__).parent / "translations")
     translator = QtCore.QTranslator(app)
-    if translator.load(QtCore.QLocale.system(), '', '', path):
+    if translator.load(QtCore.QLocale.system(), "", "", path):
         app.installTranslator(translator)
 
     mainWindow = MainWindow()
@@ -237,5 +210,5 @@ def launch():
     sys.exit(app.exec())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     launch()

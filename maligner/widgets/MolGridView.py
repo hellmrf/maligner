@@ -1,25 +1,27 @@
-# Just copied from https://stackoverflow.com/a/62031429/5160230, which is an image gallery.
-# We can just adapt this for our needs.
+""" 
+I've just copied this concept from https://stackoverflow.com/a/62031429/5160230, 
+which is an image gallery. I've made many changes to it, but the core concept is the same.
+"""
 
 import os
 import tempfile
 from pathlib import Path
 from typing import List
-from PySide6 import QtCore, QtGui, QtWidgets
 
+from PySide6 import QtCore, QtGui, QtWidgets
 from rdkit import Chem
 from rdkit.Chem import Draw
 
-from maligner.widgets.substructure_selector import SubstructureSelectorDialog
-from maligner.mtypes import Mol, MolData
 from maligner import aligner
+from maligner.mtypes import Mol, MolData
+from maligner.widgets.substructure_selector import SubstructureSelectorDialog
 
 ICON_SIZE = 200
 
 
 class MolGridViewWidget(QtWidgets.QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QtCore.QObject = None):
         super().__init__(parent)
 
         self.temp_dir = Path(tempfile.gettempdir())
@@ -86,11 +88,11 @@ class MolGridViewWidget(QtWidgets.QWidget):
         moldata.anchor = not old_anchor
 
     def load_molecules(self) -> List[MolData]:
-        """ Loads molecules from the specified filenames and returns a list of MolData objects.
-                self.molecules will be updated with the loaded molecules.
+        """Loads molecules from the specified filenames and returns a list of MolData objects.
+            self.molecules will be updated with the loaded molecules.
 
-            Returns:
-                List[MolData]: A list of MolData objects representing the loaded molecules (self.molecules).
+        Returns:
+            List[MolData]: A list of MolData objects representing the loaded molecules (self.molecules).
         """
         # TODO: we'll need to handle filetype here!
         if not self.filenames:
@@ -117,10 +119,12 @@ class MolGridViewWidget(QtWidgets.QWidget):
     def update_moldata_icon(self, moldata: MolData) -> None:
         img_file = self.temp_dir / f"{moldata.name}.png"
 
-        Draw.MolToImageFile(moldata.mol,
-                            filename=img_file,
-                            size=(ICON_SIZE, ICON_SIZE),
-                            highlightAtoms=moldata.selected)
+        Draw.MolToImageFile(
+            moldata.mol,
+            filename=img_file,
+            size=(ICON_SIZE, ICON_SIZE),
+            highlightAtoms=moldata.selected,
+        )
         qimg = QtGui.QImage(img_file)
         pixmap = QtGui.QPixmap.fromImage(qimg)
         moldata.qicon = QtGui.QIcon(pixmap)
@@ -195,10 +199,12 @@ class MolGridViewWidget(QtWidgets.QWidget):
         anchor_mol = next((m for m in self.molecules if m.anchor), None)
         if anchor_mol is not None:
             QtWidgets.QMessageBox.warning(
-                self, self.tr("Molecule anchored"),
+                self,
+                self.tr("Molecule anchored"),
                 self.
                 tr("The alignment to an anchored molecule is not yet implemented. The program will continue and align them without an anchor (the canonical MCS will be used)."
-                  ))
+                  ),
+            )
         #     return
 
         mcs = aligner.find_MCS([m.mol for m in self.molecules])
