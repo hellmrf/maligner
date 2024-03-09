@@ -14,14 +14,12 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, filenames: Optional[list[Path | str]] = None):
         super(MainWindow, self).__init__()
         self.loglevels = ["Critical", "Error", "Warning", "Info", "Debug", "Notset"]
-        # self.editor = MolEditWidget()
-        # self.substructure_selector = SubstructureSelectorDialog()
         self._filenames = filenames
         self.molgridview = MolGridViewWidget()
         self.init_GUI()
-        # TODO: selectionChanges ainda não existe
-        # self.substructure_selector.selectionChanged.connect(self.setAtomTypeName)
-        # self.editor.logger.setLevel(loglevel)
+
+    def tr(self, text: str) -> str:
+        return QtCore.QCoreApplication.translate("MainWindow", text)
 
     #Properties
     @property
@@ -81,9 +79,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.helpMenu.addAction(self.aboutAction)
         self.helpMenu.addAction(self.aboutQtAction)
         #Debug level sub menu
-        self.loglevelMenu = self.helpMenu.addMenu("Logging Level")
-        for loglevel in self.loglevels:
-            self.loglevelMenu.addAction(self.loglevelactions[loglevel])
+        # self.loglevelMenu = self.helpMenu.addMenu("Logging Level")
+        # for loglevel in self.loglevels:
+        #     self.loglevelMenu.addAction(self.loglevelactions[loglevel])
 
     def create_tool_bars(self):
         self.mainToolBar = self.addToolBar('Main')
