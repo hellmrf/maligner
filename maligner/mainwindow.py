@@ -107,21 +107,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.molgridview.file_chooser()
         self.molgridview.load_molecules()
 
-    def saveFile(self):
-        if self.filename != None:
-            Chem.MolToMolFile(self.editor.mol, str(self.filename))
-        else:
-            self.save_as_file()
-
-    def save_as_file(self):
-        self.filename, self.filterName = QtWidgets.QFileDialog.getSaveFileName(self,
-                                                                               filter=self.filters)
-        if (self.filename != ''):
-            if self.filename[-4:].upper() != ".MOL":
-                self.filename = self.filename + ".mol"
-            Chem.MolToMolFile(self.editor.mol, str(self.filename))
-            self.statusBar().showMessage(self.tr("File saved"), 2000)
-
     def open_selector(self):
         citem = self.molgridview.listview.currentItem()
         if citem is None:
@@ -181,91 +166,62 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to create actions for menus and toolbars
     def create_actions(self):
-        self.openAction = QtGui.QAction(QtGui.QIcon(pixmap("open.png")),
-                                        self.tr('Open'),
-                                        self,
-                                        shortcut=QtGui.QKeySequence.Open,
-                                        statusTip=self.tr("Open an existing file"),
-                                        triggered=self.open_file)
+        self.openAction = QtGui.QAction(QtGui.QIcon(pixmap("open.png")), self.tr('Open'), self)
+        self.openAction.setShortcut(QtGui.QKeySequence.StandardKey.Open)
+        self.openAction.setStatusTip(self.tr("Open an existing file"))
+        self.openAction.triggered.connect(self.open_file)
 
-        self.saveAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Save.png")),
-                                        self.tr('Save'),
-                                        self,
-                                        shortcut=QtGui.QKeySequence.Save,
-                                        statusTip=self.tr("Save file"),
-                                        triggered=self.saveFile)
+        self.saveAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Save.png")), self.tr('Save'),
+                                        self)
+        self.saveAction.setShortcut(QtGui.QKeySequence.StandardKey.Save)
+        self.saveAction.setStatusTip(self.tr("Save file"))
+        # self.saveAction.triggered.connect()
 
-        self.exitAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Shutdown.png")),
-                                        self.tr('Exit'),
-                                        self,
-                                        shortcut="Ctrl+Q",
-                                        statusTip=self.tr("Exit the Application"),
-                                        triggered=self.exit_file)
+        self.exitAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Shutdown.png")), self.tr('Exit'),
+                                        self)
+        self.exitAction.setStatusTip(self.tr("Exit the Application"))
+        self.exitAction.triggered.connect(self.exit_file)
 
-        self.aboutAction = QtGui.QAction(QtGui.QIcon(pixmap("about.png")),
-                                         self.tr('About'),
-                                         self,
-                                         statusTip=self.tr("Displays info about text editor"),
-                                         triggered=self.about_help)
+        self.aboutAction = QtGui.QAction(QtGui.QIcon(pixmap("about.png")), self.tr('About'), self)
+        self.aboutAction.setStatusTip(self.tr("Displays info about maligner"))
+        self.aboutAction.triggered.connect(self.about_help)
 
-        self.aboutQtAction = QtGui.QAction(self.tr("About Qt"),
-                                           self,
-                                           statusTip=self.tr("Show the Qt library's About box"),
-                                           triggered=QtWidgets.QApplication.aboutQt)
+        self.aboutQtAction = QtGui.QAction(self.tr("About Qt"), self)
+        self.aboutQtAction.setStatusTip(self.tr("Show the Qt library's About box"))
+        self.aboutQtAction.triggered.connect(QtWidgets.QApplication.aboutQt)
 
         #Misc Actions
-        self.deleteMoleculeAction = QtGui.QAction(
-            QtGui.QIcon(pixmap("icons8-Trash.png")),
-            self.tr('Delete'),
-            self,
-            shortcut="Ctrl+X",
-            statusTip=self.tr("Remove this molecule from canvas Ctrl+X"),
-            triggered=self.clear_canvas,
-            objectName="Clear Canvas")
+        self.deleteMoleculeAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Trash.png")),
+                                                  self.tr('Delete'), self)
+        self.deleteMoleculeAction.setShortcut(QtGui.QKeySequence.StandardKey.Delete)
+        self.deleteMoleculeAction.setStatusTip(self.tr("Remove this molecule from canvas"))
+        self.deleteMoleculeAction.triggered.connect(self.clear_canvas)
 
-        self.anchorAction = QtGui.QAction(
-            QtGui.QIcon(pixmap('icons8-Anchor.png')),
-            self.tr('Anchor current molecule'),
-            self,
-            shortcut="A",
-            statusTip=self.tr("Set the selected molecule as the anchor for the alignment. (A)"),
-            triggered=self.set_anchor,
-            objectName="Set Anchor")
+        self.anchorAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Anchor.png")),
+                                          self.tr('Anchor current molecule'), self)
+        self.anchorAction.setShortcut("A")
+        self.anchorAction.setStatusTip(
+            self.tr("Set the selected molecule as the anchor for the alignment. (A)"))
+        self.anchorAction.triggered.connect(self.set_anchor)
 
-        self.openSelectorAction = QtGui.QAction(
-            QtGui.QIcon(pixmap('icons8-Molecule.png')),
-            'Open Selector',
-            self,
-            statusTip="Opens the molecule selector for some molecule",
-            triggered=self.open_selector,
-            objectName="Open selector")
+        self.openSelectorAction = QtGui.QAction(QtGui.QIcon(pixmap('icons8-Molecule.png')),
+                                                'Open Selector', self)
+        self.openSelectorAction.triggered.connect(self.open_selector)
+        self.openSelectorAction.setStatusTip("Opens the molecule selector for some molecule")
 
-        self.computeMCSAction = QtGui.QAction(
-            QtGui.QIcon(pixmap('MCS.png')),
-            self.tr('Compute MCS'),
-            self,
-            shortcut="S",
-            statusTip=self.tr(
-                "Computes and select the Maximum Common Substructure for the loaded molecules."),
-            triggered=self.compute_MCS,
-            objectName="Compute MCS")
+        self.computeMCSAction = QtGui.QAction(QtGui.QIcon(pixmap('MCS.png')),
+                                              self.tr('Compute MCS'), self)
+        self.computeMCSAction.setShortcut("S")
+        self.computeMCSAction.setStatusTip(
+            self.tr(
+                "Computes and select the Maximum Common Substructure for the loaded molecules."))
+        self.computeMCSAction.triggered.connect(self.compute_MCS)
 
         self.runAlignmentAction = QtGui.QAction(QtGui.QIcon(pixmap('icons8-Molecule.png')),
-                                                self.tr('Run Alignment'),
-                                                self,
-                                                shortcut="R",
-                                                statusTip=self.tr("Align all the molecules."),
-                                                triggered=self.run_alignment,
-                                                objectName="Run Alignment")
-
-        self.loglevelactions = {}
-        for key in self.loglevels:
-            self.loglevelactions[key] = QtGui.QAction(key,
-                                                      self,
-                                                      statusTip="Set logging level to %s" % key,
-                                                      triggered=self.set_log_level,
-                                                      objectName="loglevel:%s" % key)
-        self.loglevelactions["Debug"].setChecked(True)
+                                                self.tr('Run Alignment'), self)
+        self.runAlignmentAction.setShortcut("R")
+        self.runAlignmentAction.setStatusTip(self.tr("Align all the molecules."))
+        self.runAlignmentAction.triggered.connect(self.run_alignment)
 
 
 def launch():

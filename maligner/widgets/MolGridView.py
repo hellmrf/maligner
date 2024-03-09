@@ -17,27 +17,19 @@ from maligner import aligner
 ICON_SIZE = 200
 
 
-class StyledItemDelegate(QtWidgets.QStyledItemDelegate):
-
-    def initStyleOption(self, option, index):
-        super().initStyleOption(option, index)
-        option.text = option.fontMetrics.elidedText(index.data(), QtCore.Qt.ElideRight, ICON_SIZE)
-
-
 class MolGridViewWidget(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
 
         self.temp_dir = Path(tempfile.gettempdir())
-        self.listview = QtWidgets.QListWidget(
-            viewMode=QtWidgets.QListView.IconMode,
-            iconSize=ICON_SIZE * QtCore.QSize(1, 1),
-            movement=QtWidgets.QListView.Static,
-            resizeMode=QtWidgets.QListView.Adjust,
-        )
-        delegate = StyledItemDelegate(self.listview)
-        self.listview.setItemDelegate(delegate)
+
+        self.listview = QtWidgets.QListWidget()
+        self.listview.setViewMode(QtWidgets.QListView.ViewMode.IconMode)
+        self.listview.setIconSize(QtCore.QSize(ICON_SIZE, ICON_SIZE))
+        self.listview.setResizeMode(QtWidgets.QListView.ResizeMode.Adjust)
+        self.listview.setMovement(QtWidgets.QListView.Movement.Static)
+
         self.listview.itemDoubleClicked.connect(self.on_mol_double_click)
 
         self._filenames: List[str] = []
@@ -198,10 +190,13 @@ class MolGridViewWidget(QtWidgets.QWidget):
 
     def run_alignment(self):
         anchor_mol = next((m for m in self.molecules if m.anchor), None)
-        if anchor_mol is None:
-            QtWidgets.QMessageBox.warning(self, "No anchor molecule",
-                                          "Please select an anchor molecule for alignment.")
-            return
+        if anchor_mol is not None:
+            QtWidgets.QMessageBox.warning(
+                self, self.tr("Molecule anchored"),
+                self.
+                tr("The alignment to an anchored molecule is not yet implemented. The program will continue and align them without an anchor (the canonical MCS will be used)."
+                  ))
+        #     return
 
         mcs = aligner.find_MCS([m.mol for m in self.molecules])
         self.molecules = aligner.align_moldatas(self.molecules, mcs)

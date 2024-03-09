@@ -23,7 +23,7 @@ class MolEditWidget(MolWidget):
         #Also init the super class
         super(MolEditWidget, self).__init__(parent)
         #This sets the window to delete itself when its closed, so it doesn't keep querying the model
-        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
 
         #Properties
         self._prevmol = None  #For undo

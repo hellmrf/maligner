@@ -25,7 +25,7 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
         self.loglevel = logging.WARNING
 
         #This sets the window to delete itself when its closed, so it doesn't keep lingering in the background
-        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
 
         #Private Properties
         self._mol = None  #The molecule

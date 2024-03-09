@@ -1,5 +1,5 @@
 from pathlib import Path
-import sys, os
+import sys
 
 from PySide6 import QtGui, QtWidgets
 
@@ -20,7 +20,7 @@ class SubstructureSelectorDialog(QtWidgets.QDialog):
 
         self.editor = MolEditWidget(mol=moldata.mol, selected_atoms=moldata.selected)
 
-        QBtn = QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+        QBtn = QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok
 
         self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
         self.buttonBox.accepted.connect(self.accept)
