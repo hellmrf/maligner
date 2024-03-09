@@ -35,7 +35,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setWindowTitle(str(filename))
 
     def init_GUI(self):
-        self.setWindowTitle(r"maligner |\ An Open-Source Molecular Alignment Tool")
+        self.setWindowTitle(self.tr(r"maligner |\ An Open-Source Molecular Alignment Tool"))
         self.setWindowIcon(QtGui.QIcon(pixmap("appicon.svg.png")))
         self.setGeometry(400, 400, 700, 500)
 
