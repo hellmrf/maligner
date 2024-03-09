@@ -1,3 +1,3 @@
-from mainwindow import launch
+from maligner.mainwindow import launch
 
-launch(loglevel="WARNING")
+launch()
