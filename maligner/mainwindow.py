@@ -14,7 +14,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__()
         self.loglevels = ["Critical", "Error", "Warning", "Info", "Debug", "Notset"]
         self._filenames = filenames
-        self.molgridview = MolGridViewWidget()
+        self.molgridview = MolGridViewWidget(self)
         self.init_GUI()
 
     def tr(self, text: str) -> str:
@@ -60,6 +60,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.fileMenu = self.menuBar().addMenu(self.tr("File"))
         self.fileMenu.addAction(self.openAction)
         self.fileMenu.addAction(self.saveAction)
+        self.fileMenu.addAction(self.save_alignment_action)
         self.fileMenu.addSeparator()
         self.fileMenu.addAction(self.exitAction)
 
@@ -134,6 +135,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.molgridview.run_alignment()
         self.molgridview.populate_listwidget()
 
+    def save_alignment_file(self):
+        self.molgridview.save_alignment_file()
+
     def create_actions(self):
         self.openAction = QtGui.QAction(QtGui.QIcon(pixmap("open.png")), self.tr("Open"), self)
         self.openAction.setShortcut(QtGui.QKeySequence.StandardKey.Open)
@@ -144,7 +148,12 @@ class MainWindow(QtWidgets.QMainWindow):
                                         self)
         self.saveAction.setShortcut(QtGui.QKeySequence.StandardKey.Save)
         self.saveAction.setStatusTip(self.tr("Save file"))
-        # self.saveAction.triggered.connect()
+
+        self.save_alignment_action = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Save as.png")),
+                                                   self.tr("Save alignment file"), self)
+        self.save_alignment_action.setShortcut(QtGui.QKeySequence.SaveAs)
+        self.save_alignment_action.setStatusTip(self.tr("Save the alignment to a CSV file."))
+        self.save_alignment_action.triggered.connect(self.save_alignment_file)
 
         self.exitAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Shutdown.png")), self.tr("Exit"),
                                         self)

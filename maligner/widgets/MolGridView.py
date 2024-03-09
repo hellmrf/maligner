@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import List
 
 from PySide6 import QtCore, QtGui, QtWidgets
+import pandas
 from rdkit import Chem
 from rdkit.Chem import Draw
 
@@ -210,6 +211,37 @@ class MolGridViewWidget(QtWidgets.QWidget):
         mcs = aligner.find_MCS([m.mol for m in self.molecules])
         self.molecules = aligner.align_moldatas(self.molecules, mcs)
         self.update_all_moldata_icons()
+
+    def save_alignment_file(self):
+        """
+        Save the alignment data to a CSV file.
+
+        This method prompts the user to select a file location to save the alignment data.
+        The alignment data is then saved as a CSV file with the following columns:
+            - name (str): the filename of the molecule
+            - smiles (str): the SMILES representation of the molecule
+            - selected (list[int]): a list containing the AtomIdx prop of the selected atoms
+            - anchor (bool): a boolean indicating if the molecule is the anchor
+        """
+        filename = QtWidgets.QFileDialog.getSaveFileName(self, self.tr("Save alignment file"), "",
+                                                         "Alignment file (*.csv)")[0]
+
+        if not filename:
+            return
+
+        if not filename.endswith(".csv"):
+            filename += ".csv"
+
+        df = pandas.DataFrame(columns=["name", "smiles", "selected", "anchor"])
+        for moldata in self.molecules:
+            df.loc[len(df)] = [
+                moldata.filename,
+                Chem.MolToSmiles(moldata.mol),
+                str(moldata.selected)[1:-1], moldata.anchor
+            ]
+
+        df.to_csv(filename, index=False)
+        QtWidgets.QMessageBox.information(self, self.tr("Info"), self.tr("Alignment file saved"))
 
 
 if __name__ == "__main__":
