@@ -5,7 +5,7 @@ from pathlib import Path
 from PySide6 import QtGui
 from rdkit import Chem
 
-Mol: TypeAlias = Chem.rdchem.Mol
+Mol: TypeAlias = Chem.Mol
 
 
 @dataclass
