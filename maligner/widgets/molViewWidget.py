@@ -40,7 +40,6 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
 
         self.mol = mol
 
-    ##Properties and their wrappers
     @property
     def loglevel(self):
         return self.logger.level
@@ -49,7 +48,6 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
     def loglevel(self, loglvl):
         self.logger.setLevel(loglvl)
 
-    # Getter and setter for mol
     molChanged = QtCore.Signal(name="molChanged")
 
     @property
@@ -96,13 +94,22 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
         return self._selectedAtoms
 
     @selectedAtoms.setter
-    def selectedAtoms(self, atomlist):
-        if atomlist != self._selectedAtoms:
-            assert isinstance(atomlist, list), "selectedAtoms should be a list of integers"
-            assert all(isinstance(item, int)
-                       for item in atomlist), "selectedAtoms should be a list of integers"
-            self._selectedAtoms = atomlist
-            self.selectionChanged.emit(self.selectedAtoms)
+    def selectedAtoms(self, atomlist: list[int]):
+        if atomlist == self._selectedAtoms:
+            return
+
+        if atomlist is None or atomlist == []:
+            self.clearAtomSelection()
+            return
+
+        if not isinstance(atomlist, list):
+            raise ValueError("selectedAtoms should be a list of integers")
+
+        if not all(isinstance(item, int) for item in atomlist):
+            raise ValueError("selectedAtoms should be a list of integers")
+
+        self._selectedAtoms = atomlist
+        self.selectionChanged.emit(self.selectedAtoms)
 
     def setSelectedAtoms(self, atomlist):
         self.selectedAtoms = atomlist
@@ -134,9 +141,12 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
             self.logger.debug("Ignoring existing conformers, computing all "
                               "2D coords")
         else:
-            assert self._mol.GetNumConformers() == 1
-            self.logger.debug("1 Conformer found, computing 2D coords not in "
-                              "found conformer")
+            if self._mol.GetNumConformers() > 1:
+                self.logger.debug("More than 1 conformer found, using first")
+            else:
+                self.logger.debug("1 Conformer found, computing 2D coords not in "
+                                  "found conformer")
+
             conf = self._mol.GetConformer(0)
             for a in self._mol.GetAtoms():
                 pos3d = conf.GetAtomPosition(a.GetIdx())
