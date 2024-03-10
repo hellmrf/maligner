@@ -12,7 +12,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, filenames: Optional[list[Path | str]] = None):
         super(MainWindow, self).__init__()
-        self.loglevels = ["Critical", "Error", "Warning", "Info", "Debug", "Notset"]
         self._filenames = filenames
         self.molgridview = MolGridViewWidget(self)
         self.init_GUI()
