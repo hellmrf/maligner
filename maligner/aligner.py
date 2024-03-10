@@ -86,9 +86,15 @@ def align_moldatas(moldatas: list[MolData], template: Mol) -> list[MolData]:
     Returns:
         list[MolData]: The list of aligned MolData objects.
     """
+    # anchor = next((moldata for moldata in moldatas if moldata.anchor), None)
+
+    # TODO: add check for anchor. if anchor is not None
+    # if anchor is None:
+    # Align without anchor
     for moldata in moldatas:
         moldata.mol = dm.align.template_align(mol=moldata.mol, template=template)
         moldata.mol = dm.fix_mol(moldata.mol)
         moldata.mol = dm.sanitize_mol(moldata.mol)
-
+        moldata.selected = []
     return moldatas
+    # else: pass # TODO: implement aligning to anchor
