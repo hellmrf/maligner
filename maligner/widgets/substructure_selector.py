@@ -10,7 +10,6 @@ from maligner.widgets.molEditWidget import MolEditWidget
 
 
 class SubstructureSelectorDialog(QtWidgets.QDialog):
-
     def __init__(self, moldata: MolData):
         super(SubstructureSelectorDialog, self).__init__()
         self.setWindowTitle(f"Substructure Selector ({moldata.name})")
@@ -19,8 +18,10 @@ class SubstructureSelectorDialog(QtWidgets.QDialog):
 
         self.editor = MolEditWidget(mol=moldata.mol, selected_atoms=moldata.selected)
 
-        QBtn = (QtWidgets.QDialogButtonBox.StandardButton.Cancel |
-                QtWidgets.QDialogButtonBox.StandardButton.Ok)
+        QBtn = (
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok
+        )
 
         self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
         self.buttonBox.accepted.connect(self.accept)
@@ -46,6 +47,7 @@ if __name__ == "__main__":
     mol = Chem.MolFromMolFile("molecules/any1.mol")
     # mainWindow = SubstructureSelectorWindow(molecule=mol, loglevel=loglevel)
     dialog = SubstructureSelectorDialog(
-        MolData(mol, "any1.mol", Path("molecules/any1.mol"), QtGui.QIcon()))
+        MolData(mol, "any1.mol", Path("molecules/any1.mol"), QtGui.QIcon())
+    )
     dialog.show()
     sys.exit(myApp.exec())

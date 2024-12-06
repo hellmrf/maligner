@@ -14,8 +14,9 @@ from maligner.widgets.molViewWidget import MolWidget
 
 
 class MolEditWidget(MolWidget):
-
-    def __init__(self, mol: Mol, selected_atoms: Optional[list[int]] = None, parent=None):
+    def __init__(
+        self, mol: Mol, selected_atoms: Optional[list[int]] = None, parent=None
+    ):
         if selected_atoms is None:
             selected_atoms = []
 
@@ -27,8 +28,9 @@ class MolEditWidget(MolWidget):
         self._prevmol = None  # For undo
         self.coordlist = None  # SVG coords of the current mols atoms
 
-        self.bondtypes = (Chem.rdchem.BondType.names
-                         )  # A dictionary with all available rdkit bondtypes
+        self.bondtypes = (
+            Chem.rdchem.BondType.names
+        )  # A dictionary with all available rdkit bondtypes
 
         # Points to calculate the SVG to coord scaling
         self.points = [Point2D(0, 0), Point2D(1, 1)]
@@ -61,7 +63,11 @@ class MolEditWidget(MolWidget):
     def update_coordlist(self):
         if self.mol is not None:
             self.coordlist = np.array(
-                [list(self.drawer.GetDrawCoords(i)) for i in range(self.mol.GetNumAtoms())])
+                [
+                    list(self.drawer.GetDrawCoords(i))
+                    for i in range(self.mol.GetNumAtoms())
+                ]
+            )
             self.logger.debug("Current coordlist:\n%s" % self.coordlist)
         else:
             self.coordlist = None
@@ -73,7 +79,7 @@ class MolEditWidget(MolWidget):
             deltas = self.coordlist - atomsvgcoords
             dist_2 = np.einsum("ij,ij->i", deltas, deltas)
             min_idx = np.argmin(dist_2)
-            return min_idx, dist_2[min_idx]**0.5
+            return min_idx, dist_2[min_idx] ** 0.5
         else:
             return None, 1e10  # Return ridicilous long distance so that its not chosen
 
@@ -92,7 +98,7 @@ class MolEditWidget(MolWidget):
             deltas = bondlist - atomsvgcoords
             dist_2 = np.einsum("ij,ij->i", deltas, deltas)
             min_idx = np.argmin(dist_2)
-            return min_idx, dist_2[min_idx]**0.5
+            return min_idx, dist_2[min_idx] ** 0.5
         else:
             return None, 1e10  # Return ridicilous long distance so that its not chosen
 
@@ -113,7 +119,9 @@ class MolEditWidget(MolWidget):
         # Identify Nearest atomindex
         atom_idx, atom_dist = self.get_nearest_atom(x_svg, y_svg)
         bond_idx, bond_dist = self.get_nearest_bond(x_svg, y_svg)
-        self.logger.debug("Distances to atom %0.2F, bond %0.2F" % (atom_dist, bond_dist))
+        self.logger.debug(
+            "Distances to atom %0.2F, bond %0.2F" % (atom_dist, bond_dist)
+        )
 
         # If not below a given threshold, then it was not clicked
         if min([atom_dist, bond_dist]) < 14.0:
@@ -169,7 +177,6 @@ class MolEditWidget(MolWidget):
 
 
 if __name__ == "__main__":
-
     mol = Chem.MolFromSmiles("CCN(C)C1CCCCC1S")
     rdDepictor.Compute2DCoords(mol)
     myApp = QtWidgets.QApplication(sys.argv)

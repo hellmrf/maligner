@@ -1,5 +1,5 @@
-""" 
-I've just copied this concept from https://stackoverflow.com/a/62031429/5160230, 
+"""
+I've just copied this concept from https://stackoverflow.com/a/62031429/5160230,
 which is an image gallery. I've made many changes to it, but the core concept is the same.
 """
 
@@ -21,7 +21,6 @@ ICON_SIZE = 200
 
 
 class MolGridViewWidget(QtWidgets.QWidget):
-
     def __init__(self, parent: QtCore.QObject = None):
         super().__init__(parent)
 
@@ -67,7 +66,9 @@ class MolGridViewWidget(QtWidgets.QWidget):
     def on_mol_double_click(self, item: QtWidgets.QListWidgetItem):
         moldata = self.moldata_from_item(item)
         dlg = SubstructureSelectorDialog(moldata)
-        dlg.editor.selectionChanged.connect(lambda x: self.on_mol_selection_changed(moldata, x))
+        dlg.editor.selectionChanged.connect(
+            lambda x: self.on_mol_selection_changed(moldata, x)
+        )
         dlg.exec()
 
     def clear(self):
@@ -76,8 +77,9 @@ class MolGridViewWidget(QtWidgets.QWidget):
         self._filenames = []
 
     def file_chooser(self):
-        self.filenames = QtWidgets.QFileDialog.getOpenFileNames(self, self.tr("Choose molecules"),
-                                                                "", "Molecules (*mol)")[0]
+        self.filenames = QtWidgets.QFileDialog.getOpenFileNames(
+            self, self.tr("Choose molecules"), "", "Molecules (*mol)"
+        )[0]
 
     def set_anchor(self, index: int):
         moldata = self.molecules[index]
@@ -202,9 +204,9 @@ class MolGridViewWidget(QtWidgets.QWidget):
             QtWidgets.QMessageBox.warning(
                 self,
                 self.tr("Molecule anchored"),
-                self.
-                tr("The alignment to an anchored molecule is not yet implemented. The program will continue and align them without an anchor (the canonical MCS will be used)."
-                  ),
+                self.tr(
+                    "The alignment to an anchored molecule is not yet implemented. The program will continue and align them without an anchor (the canonical MCS will be used)."
+                ),
             )
         #     return
 
@@ -223,8 +225,9 @@ class MolGridViewWidget(QtWidgets.QWidget):
             - selected (list[int]): a list containing the AtomIdx prop of the selected atoms
             - anchor (bool): a boolean indicating if the molecule is the anchor
         """
-        filename = QtWidgets.QFileDialog.getSaveFileName(self, self.tr("Save alignment file"), "",
-                                                         "Alignment file (*.csv)")[0]
+        filename = QtWidgets.QFileDialog.getSaveFileName(
+            self, self.tr("Save alignment file"), "", "Alignment file (*.csv)"
+        )[0]
 
         if not filename:
             return
@@ -237,11 +240,14 @@ class MolGridViewWidget(QtWidgets.QWidget):
             df.loc[len(df)] = [
                 moldata.filename,
                 Chem.MolToSmiles(moldata.mol),
-                str(moldata.selected)[1:-1], moldata.anchor
+                str(moldata.selected)[1:-1],
+                moldata.anchor,
             ]
 
         df.to_csv(filename, index=False)
-        QtWidgets.QMessageBox.information(self, self.tr("Info"), self.tr("Alignment file saved"))
+        QtWidgets.QMessageBox.information(
+            self, self.tr("Info"), self.tr("Alignment file saved")
+        )
 
 
 if __name__ == "__main__":

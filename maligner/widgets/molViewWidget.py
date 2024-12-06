@@ -13,7 +13,6 @@ from rdkit.Geometry.rdGeometry import Point2D
 
 # The Viewer Class
 class MolWidget(QtSvgWidgets.QSvgWidget):
-
     def __init__(self, mol=None, parent=None):
         # Also init the super class
         super(MolWidget, self).__init__(parent)
@@ -69,7 +68,9 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
         self.mol = mol
 
     # Handling of selections
-    selectionChanged = QtCore.Signal(list, name="selectionChanged", arguments=["selectedAtoms"])
+    selectionChanged = QtCore.Signal(
+        list, name="selectionChanged", arguments=["selectedAtoms"]
+    )
 
     def selectAtomAdd(self, atomidx):
         if atomidx not in self._selectedAtoms:
@@ -138,14 +139,16 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
         if self._mol.GetNumConformers() == 0:
             self.logger.debug("No Conformers found, computing all 2D coords")
         elif ignoreExisting:
-            self.logger.debug("Ignoring existing conformers, computing all "
-                              "2D coords")
+            self.logger.debug(
+                "Ignoring existing conformers, computing all " "2D coords"
+            )
         else:
             if self._mol.GetNumConformers() > 1:
                 self.logger.debug("More than 1 conformer found, using first")
             else:
-                self.logger.debug("1 Conformer found, computing 2D coords not in "
-                                  "found conformer")
+                self.logger.debug(
+                    "1 Conformer found, computing 2D coords not in " "found conformer"
+                )
 
             conf = self._mol.GetConformer(0)
             for a in self._mol.GetAtoms():
@@ -155,7 +158,9 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
                 prev_coords[a.GetIdx()] = Point2D(pos3d.x, pos3d.y)
         self.logger.debug("Coordmap %s" % prev_coords)
         self.logger.debug("canonOrient %s" % canonOrient)
-        rdDepictor.Compute2DCoords(self._mol, coordMap=prev_coords, canonOrient=canonOrient)
+        rdDepictor.Compute2DCoords(
+            self._mol, coordMap=prev_coords, canonOrient=canonOrient
+        )
 
     def canon_coords_and_draw(self):
         self.logger.debug("Recalculating coordinates")
@@ -194,9 +199,13 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
             except Chem.KekulizeException:
                 self.logger.warning("Unkekulizable")
         try:
-            self._drawmol = rdMolDraw2D.PrepareMolForDrawing(self._drawmol, kekulize=drawkekulize)
+            self._drawmol = rdMolDraw2D.PrepareMolForDrawing(
+                self._drawmol, kekulize=drawkekulize
+            )
         except ValueError:  # <- can happen on a kekulization failure
-            self._drawmol = rdMolDraw2D.PrepareMolForDrawing(self._drawmol, kekulize=False)
+            self._drawmol = rdMolDraw2D.PrepareMolForDrawing(
+                self._drawmol, kekulize=False
+            )
 
     finishedDrawing = QtCore.Signal(name="finishedDrawing")
 
@@ -209,8 +218,9 @@ class MolWidget(QtSvgWidgets.QSvgWidget):
             opts = self.drawer.drawOptions()
             for tag in chiraltags:
                 idx = tag[0]
-                opts.atomLabels[idx] = (self._drawmol.GetAtomWithIdx(idx).GetSymbol() + ":" +
-                                        tag[1])
+                opts.atomLabels[idx] = (
+                    self._drawmol.GetAtomWithIdx(idx).GetSymbol() + ":" + tag[1]
+                )
             if len(self._selectedAtoms) > 0:
                 colors = {
                     self._selectedAtoms[-1]: (1, 0.2, 0.2)

@@ -9,7 +9,6 @@ from maligner.widgets.MolGridView import MolGridViewWidget
 
 
 class MainWindow(QtWidgets.QMainWindow):
-
     def __init__(self, filenames: Optional[list[Path | str]] = None):
         super(MainWindow, self).__init__()
         self._filenames = filenames
@@ -30,7 +29,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setWindowTitle(str(filename))
 
     def init_GUI(self):
-        self.setWindowTitle(self.tr(r"maligner |\ An Open-Source Molecular Alignment Tool"))
+        self.setWindowTitle(
+            self.tr(r"maligner |\ An Open-Source Molecular Alignment Tool")
+        )
         self.setWindowIcon(QtGui.QIcon(pixmap("appicon.svg.png")))
         self.setGeometry(400, 400, 700, 500)
 
@@ -54,7 +55,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.create_tool_bars()
 
     def create_menus(self):
-
         # File
         self.fileMenu = self.menuBar().addMenu(self.tr("File"))
         self.fileMenu.addAction(self.openAction)
@@ -111,9 +111,9 @@ class MainWindow(QtWidgets.QMainWindow):
         QtWidgets.QMessageBox.about(
             self,
             self.tr("About maligner"),
-            self.
-            tr("""maligner is an Open-Source Molecular Alignment Tool.\n\n\nBased on RDKit: http://www.rdkit.org/\nBased on rdeditor: https://github.com/EBjerrum/rdeditor\nSome icons from: http://icons8.com\nSource code: https://github.com/hellmrf/maligner\n\nReleased under GPL-v3.0."""
-              ),
+            self.tr(
+                """maligner is an Open-Source Molecular Alignment Tool.\n\n\nBased on RDKit: http://www.rdkit.org/\nBased on rdeditor: https://github.com/EBjerrum/rdeditor\nSome icons from: http://icons8.com\nSource code: https://github.com/hellmrf/maligner\n\nReleased under GPL-v3.0."""
+            ),
         )
 
     def set_anchor(self):
@@ -138,28 +138,39 @@ class MainWindow(QtWidgets.QMainWindow):
         self.molgridview.save_alignment_file()
 
     def create_actions(self):
-        self.openAction = QtGui.QAction(QtGui.QIcon(pixmap("open.png")), self.tr("Open"), self)
+        self.openAction = QtGui.QAction(
+            QtGui.QIcon(pixmap("open.png")), self.tr("Open"), self
+        )
         self.openAction.setShortcut(QtGui.QKeySequence.StandardKey.Open)
         self.openAction.setStatusTip(self.tr("Open an existing file"))
         self.openAction.triggered.connect(self.open_file)
 
-        self.saveAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Save.png")), self.tr("Save"),
-                                        self)
+        self.saveAction = QtGui.QAction(
+            QtGui.QIcon(pixmap("icons8-Save.png")), self.tr("Save"), self
+        )
         self.saveAction.setShortcut(QtGui.QKeySequence.StandardKey.Save)
         self.saveAction.setStatusTip(self.tr("Save file"))
 
-        self.save_alignment_action = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Save as.png")),
-                                                   self.tr("Save alignment file"), self)
+        self.save_alignment_action = QtGui.QAction(
+            QtGui.QIcon(pixmap("icons8-Save as.png")),
+            self.tr("Save alignment file"),
+            self,
+        )
         self.save_alignment_action.setShortcut(QtGui.QKeySequence.SaveAs)
-        self.save_alignment_action.setStatusTip(self.tr("Save the alignment to a CSV file."))
+        self.save_alignment_action.setStatusTip(
+            self.tr("Save the alignment to a CSV file.")
+        )
         self.save_alignment_action.triggered.connect(self.save_alignment_file)
 
-        self.exitAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Shutdown.png")), self.tr("Exit"),
-                                        self)
+        self.exitAction = QtGui.QAction(
+            QtGui.QIcon(pixmap("icons8-Shutdown.png")), self.tr("Exit"), self
+        )
         self.exitAction.setStatusTip(self.tr("Exit the Application"))
         self.exitAction.triggered.connect(self.exit_file)
 
-        self.aboutAction = QtGui.QAction(QtGui.QIcon(pixmap("about.png")), self.tr("About"), self)
+        self.aboutAction = QtGui.QAction(
+            QtGui.QIcon(pixmap("about.png")), self.tr("About"), self
+        )
         self.aboutAction.setStatusTip(self.tr("Displays info about maligner"))
         self.aboutAction.triggered.connect(self.about_help)
 
@@ -167,10 +178,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.aboutQtAction.setStatusTip(self.tr("Show the Qt library's About box"))
         self.aboutQtAction.triggered.connect(QtWidgets.QApplication.aboutQt)
 
-        self.deleteMoleculeAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Trash.png")),
-                                                  self.tr("Delete"), self)
+        self.deleteMoleculeAction = QtGui.QAction(
+            QtGui.QIcon(pixmap("icons8-Trash.png")), self.tr("Delete"), self
+        )
         self.deleteMoleculeAction.setShortcut(QtGui.QKeySequence.StandardKey.Delete)
-        self.deleteMoleculeAction.setStatusTip(self.tr("Remove this molecule from canvas"))
+        self.deleteMoleculeAction.setStatusTip(
+            self.tr("Remove this molecule from canvas")
+        )
         self.deleteMoleculeAction.triggered.connect(self.clear_canvas)
 
         self.anchorAction = QtGui.QAction(
@@ -180,24 +194,32 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.anchorAction.setShortcut("A")
         self.anchorAction.setStatusTip(
-            self.tr("Set the selected molecule as the anchor for the alignment. (A)"))
+            self.tr("Set the selected molecule as the anchor for the alignment. (A)")
+        )
         self.anchorAction.triggered.connect(self.set_anchor)
 
-        self.openSelectorAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Molecule.png")),
-                                                "Open Selector", self)
+        self.openSelectorAction = QtGui.QAction(
+            QtGui.QIcon(pixmap("icons8-Molecule.png")), "Open Selector", self
+        )
         self.openSelectorAction.triggered.connect(self.open_selector)
-        self.openSelectorAction.setStatusTip("Opens the molecule selector for some molecule")
+        self.openSelectorAction.setStatusTip(
+            "Opens the molecule selector for some molecule"
+        )
 
-        self.computeMCSAction = QtGui.QAction(QtGui.QIcon(pixmap("MCS.png")),
-                                              self.tr("Compute MCS"), self)
+        self.computeMCSAction = QtGui.QAction(
+            QtGui.QIcon(pixmap("MCS.png")), self.tr("Compute MCS"), self
+        )
         self.computeMCSAction.setShortcut("S")
         self.computeMCSAction.setStatusTip(
             self.tr(
-                "Computes and select the Maximum Common Substructure for the loaded molecules."))
+                "Computes and select the Maximum Common Substructure for the loaded molecules."
+            )
+        )
         self.computeMCSAction.triggered.connect(self.compute_MCS)
 
-        self.runAlignmentAction = QtGui.QAction(QtGui.QIcon(pixmap("icons8-Molecule.png")),
-                                                self.tr("Run Alignment"), self)
+        self.runAlignmentAction = QtGui.QAction(
+            QtGui.QIcon(pixmap("icons8-Molecule.png")), self.tr("Run Alignment"), self
+        )
         self.runAlignmentAction.setShortcut("R")
         self.runAlignmentAction.setStatusTip(self.tr("Align all the molecules."))
         self.runAlignmentAction.triggered.connect(self.run_alignment)
@@ -213,7 +235,6 @@ def launch():
         app.installTranslator(translator)
 
     mainWindow = MainWindow()
-
 
     sys.exit(app.exec())
 
