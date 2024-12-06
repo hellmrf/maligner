@@ -1,0 +1,37 @@
+name: Check and lint
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+
+jobs:
+  consistency:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+      fail-fast: false
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Inspect dependencies
+        run: uv run deptry .
+
+      - name: Check lock file consistency
+        run: uv sync --locked
+
+      - name: Type-checking (mypy)
+        run: uv run mypy
+
+      - name: Linter (ruff check)
+        run: uv run ruff check
+
+      - name: Formatter (ruff format)
+        run: uv run ruff format --check
