@@ -20,7 +20,11 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = []
+dev = [
+    "mypy>=1.13.0",
+    "pandas-stubs>=2.2.3.241126",
+    "ruff>=0.8.2",
+]
 
 # Build system
 
@@ -35,3 +39,13 @@ include = ["/maligner"]
 packages = ["maligner"]
 
 # Other tools
+
+## mypy
+
+[tool.mypy]
+packages = ["maligner"]
+exclude = [ "molecules/*"]
+
+[[tool.mypy.overrides]]
+module = "datamol"
+ignore_missing_imports = true
