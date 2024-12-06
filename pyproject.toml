@@ -12,12 +12,10 @@ authors = [
     { name = "Heliton Martins Reis Filho", email = "helitonmrf@gmail.com" },
 ]
 dependencies = ["numpy", "pandas", "PySide6", "rdkit", "datamol"]
+gui-scripts = { gui = "maligner.__main__:launch" }
 
 [project.optional-dependencies]
 dev = ["hatch", "yapf"]
-
-[project.gui-scripts]
-maligner = "maligner.mainwindow:launch"
 
 [project.urls]
 Homepage = "https://github.com/hellmrf/maligner"
