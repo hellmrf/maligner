@@ -62,8 +62,7 @@ class MolGridViewWidget(QtWidgets.QWidget):
                 break
         self.populate_listwidget()
 
-    @QtCore.Slot(QtWidgets.QListWidgetItem)
-    def on_mol_double_click(self, item: QtWidgets.QListWidgetItem):
+    def on_mol_double_click(self, item: QtWidgets.QListWidgetItem) -> None:
         moldata = self.moldata_from_item(item)
         dlg = SubstructureSelectorDialog(moldata)
         dlg.editor.selectionChanged.connect(
