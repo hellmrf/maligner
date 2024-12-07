@@ -46,10 +46,6 @@ packages = ["maligner"]
 packages = ["maligner"]
 exclude = [ "molecules/*"]
 
-[[tool.mypy.overrides]]
-module = "datamol"
-ignore_missing_imports = true
-
 ## ruff
 [tool.ruff]
 exclude = ["molecules/*"]
