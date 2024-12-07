@@ -15,8 +15,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.molgridview = MolGridViewWidget(self)
         self.init_GUI()
 
-    def tr(self, text: str) -> str:
-        return QtCore.QCoreApplication.translate("MainWindow", text)
+    def tr(self, sourceText: str, disambiguation: Optional[str] = None, n: int = -1) -> str:
+        return QtWidgets.QApplication.translate("MolGridViewWidget", sourceText, disambiguation, n)
 
     @property
     def filename(self):

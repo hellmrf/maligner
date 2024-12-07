@@ -41,8 +41,8 @@ class MolGridViewWidget(QtWidgets.QWidget):
 
         grid_layout.addWidget(self.listview, 0, 0, 1, 1)
 
-    def tr(self, text: str) -> str:
-        return QtWidgets.QApplication.translate("MolGridViewWidget", text)
+    def tr(self, sourceText: str, disambiguation: Optional[str] = None, n: int = -1) -> str:
+        return QtWidgets.QApplication.translate("MolGridViewWidget", sourceText, disambiguation, n)
 
     @property
     def filenames(self):
