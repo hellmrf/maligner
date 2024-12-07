@@ -234,7 +234,7 @@ def launch():
     if translator.load(QtCore.QLocale.system(), "", "", path):
         app.installTranslator(translator)
 
-    mainWindow = MainWindow()
+    _ = MainWindow()
 
     sys.exit(app.exec())
 

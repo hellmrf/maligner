@@ -136,11 +136,11 @@ class MolEditWidget(MolWidget):
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.LeftButton:
             clicked = self.get_molobject(event)
-            if type(clicked) == Chem.rdchem.Atom:
+            if isinstance(clicked, Chem.rdchem.Atom):
                 self.atom_click(clicked)
-            elif type(clicked) == Chem.rdchem.Bond:
+            elif isinstance(clicked, Chem.rdchem.Bond):
                 self.bond_click(clicked)
-            elif type(clicked) == Point2D:
+            elif isinstance(clicked, Point2D):
                 self.logger.debug("Canvas Click")
                 self.canvas_click(clicked)
 

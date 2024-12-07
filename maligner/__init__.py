@@ -1,1 +1,1 @@
-from maligner.mainwindow import launch
+from maligner.mainwindow import launch as launch
