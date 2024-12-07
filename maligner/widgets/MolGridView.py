@@ -6,7 +6,7 @@ which is an image gallery. I've made many changes to it, but the core concept is
 import os
 import tempfile
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from PySide6 import QtCore, QtGui, QtWidgets
 import pandas
@@ -21,7 +21,7 @@ ICON_SIZE = 200
 
 
 class MolGridViewWidget(QtWidgets.QWidget):
-    def __init__(self, parent: QtCore.QObject = None):
+    def __init__(self, parent: Optional[QtWidgets.QWidget] = None):
         super().__init__(parent)
 
         self.temp_dir = Path(tempfile.gettempdir())
