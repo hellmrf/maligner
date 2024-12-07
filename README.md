@@ -1,69 +1,102 @@
-# maligner: An Open-Source Molecular Alignment Tool
+<div align="center">
+  <!--<img src="docs/images/logo.svg" alt="Logo" width="100" height="100">-->
 
-![GitHub top language](https://img.shields.io/github/languages/top/hellmrf/maligner)
-[![GitHub License](https://img.shields.io/github/license/hellmrf/maligner)](https://github.com/hellmrf/maligner/blob/main/LICENSE)
-[![Powered by RDKit](https://img.shields.io/badge/Powered%20by-RDKit-3838ff.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAFVBMVEXc3NwUFP8UPP9kZP+MjP+0tP////9ZXZotAAAAAXRSTlMAQObYZgAAAAFiS0dEBmFmuH0AAAAHdElNRQfmAwsPGi+MyC9RAAAAQElEQVQI12NgQABGQUEBMENISUkRLKBsbGwEEhIyBgJFsICLC0iIUdnExcUZwnANQWfApKCK4doRBsKtQFgKAQC5Ww1JEHSEkAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wMy0xMVQxNToyNjo0NyswMDowMDzr2J4AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDMtMTFUMTU6MjY6NDcrMDA6MDBNtmAiAAAAAElFTkSuQmCC)](https://www.rdkit.org/)
+  # `maligner`
+  
+  _An Open-Source Molecular Alignment Tool._
 
+  ![GitHub top language](https://img.shields.io/github/languages/top/hellmrf/maligner)
+  [![GitHub License](https://img.shields.io/github/license/hellmrf/maligner)](https://github.com/hellmrf/maligner/blob/main/LICENSE)
+  [![Powered by RDKit](https://img.shields.io/badge/Powered%20by-RDKit-3838ff.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAFVBMVEXc3NwUFP8UPP9kZP+MjP+0tP////9ZXZotAAAAAXRSTlMAQObYZgAAAAFiS0dEBmFmuH0AAAAHdElNRQfmAwsPGi+MyC9RAAAAQElEQVQI12NgQABGQUEBMENISUkRLKBsbGwEEhIyBgJFsICLC0iIUdnExcUZwnANQWfApKCK4doRBsKtQFgKAQC5Ww1JEHSEkAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wMy0xMVQxNToyNjo0NyswMDowMDzr2J4AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDMtMTFUMTU6MjY6NDcrMDA6MDBNtmAiAAAAAElFTkSuQmCC)](https://www.rdkit.org/)
+  
+  <!--<a href="#about"><strong>Explore the docs »</strong></a>
+  <br />
+  <br />
+  <a href="https://github.com/hellmrf/maligner/issues/new?assignees=&labels=bug&template=01_BUG_REPORT.md&title=bug%3A+">Report a Bug</a>
+  ·
+  <a href="https://github.com/hellmrf/maligner/issues/new?assignees=&labels=enhancement&template=02_FEATURE_REQUEST.md&title=feat%3A+">Request a Feature</a>-->
+</div>
 
-## Installation
+## About
 
-Once this library gets released, it'll be installable via `pip install maligner` or any related command.
+maligner is an open-source tool for molecular alignment, designed to facilitate the manipulation and visualization of molecular structures. The goal is to provide an intuitive graphical interface and advanced functionalities to align molecules efficiently, leveraging the power of RDKit.
 
+### Built With
+
+- [Python](https://www.python.org/)
+- [RDKit](https://www.rdkit.org/)
+
+## Getting Started (development)
+
+### Prerequisites
+
+- Install [`uv`](https://docs.astral.sh/uv).
+
+A global Python installation is not required as `uv` will handle the environment setup.
+
+## Usage
+
+To run the application, use the following command:
+
+```bash
+uv run gui
+```
+
+This will:
+1. Create and resolve a new environment (located at `.venv`).
+2. Install all necessary dependencies (including dev-dependencies).
+3. Launch the application's GUI.
 
 ## Development
 
 ### Stage of development
 
-The current stage of this project is: `IDEA`, so it's absolutely not ready for real usage. Your contribution would be very appreciated.
+The project is currently in the `IDEA` stage and is not yet ready for real usage. Contributions are welcome and appreciated!
 
-### Setup
+### Development Setup
 
-You shall have [`uv`](https://docs.astral.sh/uv) installed. A global Python is not needed.
+We use the following dev-only tools.
 
-To run maligner, use one of:
+- [`mypy`](https://mypy-lang.org/) for type-checking.
+- [`ruff`](https://github.com/charliermarsh/ruff) for linting and formatting.
 
-```shell
-$ uv run gui
-```
+Run the following commands as needed to run them.
 
-`uv run gui` will: create and resolve a new environment (located at `.venv`) for this project, install needed dependencies (including dev-dependencies) and run the entrypoint of the application.
-
-### Tools
-
-We're using `mypy` for type-checking and `ruff` for linter and formatting. To run them:
-
-```shell
+```bash
 $ uv run mypy
-
 $ uv run ruff check
-
 $ uv run ruff format
 ```
 
-## Current plan
+## Roadmap
 
-Currently, the plan for the UX of the software is the following.
+- **Main Screen**:
+  - [X] Load molecules in `.mol`, `.mol2`, etc.
+  - [X] Display molecules in a grid with filenames.
+  - [X] Mark a molecule as anchor.
+  - [X] Navigate to structure selector.
+  - [ ] Add options menu.
+  - [ ] Implement "Preview Alignment" and "Save Alignment" buttons.
 
-**Main screen**:
-- [X] The user can load molecules (in .mol, .mol2 or ??)
-- [X] Can see a grid with all molecules and the filename
-- [X] Can mark one molecule as anchor
-- [X] Can go to structure selector.
-- [ ] Options menu
-- [ ] "Preview Alignment" and "Save Alignment" buttons.
+- **Options Menu**:
+  - Overwrite original files.
+  - Suffix aligned files (with user-defined suffix).
+  - *(Default)* Save in a separate directory (`aligned`).
 
-**Options menu**
-- Save action:
-  - Overwrite original files
-  - Suffix aligned files (option to write the suffix)
-  - *(Default)* Save in a separate directory (default: `aligned`)
+- **Atom Selector**:
+  - [X] Display molecule and calculate MCS by default.
+  - [ ] Add selection buttons: Select MCS, Select All, Select None.
+  - [ ] Include Cancel and Save buttons.
+  - [X] Allow users to click on atoms to select/deselect.
+  - [ ] Enable selection by SMILES/SMARTS.
+  - [ ] (Optional) Implement lasso tool for selection.
 
-**Atom selector**:
-- [X] User see the molecule and, by default, the MCS calculated.
-- [ ] Three selection buttons: Select MCS, Select All, Select None.
-- [ ] Two more buttons: Cancel, Save.
-- [X] User can click on atoms to select/deselect.
-- [ ] Select structure by SMILES/SMARTS.
-- [ ] Maybe implement lasso tool in future.
+## Support
 
-At this stage, users can load molecules, anchor one of them, and they are displayed in a grid view. The user can automatically select MCS on all molecules. The user can click twice on a molecule and it will take it to Substructure Selector, where the selected atoms can be tweaked by clicking. Now we need to implement the alignment part. I have some drafts already.
+For support, reach out via:
+
+- [GitHub Issues](https://github.com/hellmrf/maligner/issues)
+
+## License
+
+This project is licensed under the GPL-3.0 License. See the [LICENSE](https://github.com/hellmrf/maligner/blob/main/LICENSE) file for details.
